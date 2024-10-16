@@ -1,5 +1,7 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
+const { dialog } = require("electron");
+const { ipcMain } = require("electron");
 let isDev, mainWindow, server ;
 
 (async () => {
@@ -11,8 +13,9 @@ function createWindow() {
     width: 1280,
     height: 720,
     webPreferences: {
-      nodeIntegration: true,
-      contextIsolation: false,
+      nodeIntegration: false,
+      contextIsolation: true,
+      preload: path.join(__dirname, "./preload.js"),
       webSecurity: true,
       allowRunningInsecureContent: false,
     },
@@ -54,6 +57,17 @@ app.on("activate", () => {
 app.on("quit", () => {
   if (server) {
     server.close();
+  }
+});
+
+ipcMain.handle("open-folder-dialog", async () => {
+  const result = await dialog.showOpenDialog({
+    properties: ["openDirectory"]
+  });
+  if (result.canceled) {
+    return null;
+  } else {
+    return result.filePaths[0];
   }
 });
 

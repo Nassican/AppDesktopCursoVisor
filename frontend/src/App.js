@@ -19,7 +19,7 @@ const App = () => {
   const [structure, setStructure] = useState(null);
   const [selectedContent, setSelectedContent] = useState(null);
   const [expandedFolders, setExpandedFolders] = useState({});
-  const [folderPath, setFolderPath] = useState("");
+  const [, setFolderPath] = useState("");
   const [videoProgress, setVideoProgress] = useState({});
   const [videoHistory, setVideoHistory] = useState({});
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -81,13 +81,14 @@ const App = () => {
     try {
       const response = await axios.post(
         "http://localhost:3001/api/folder-structure",
-        { folderPath }
+        { courseId: selectedCourse }
       );
       setStructure(response.data);
     } catch (error) {
       console.error("Error fetching folder structure:", error);
     }
   };
+  
 
   const toggleFolder = (path) => {
     setExpandedFolders((prev) => ({
@@ -123,18 +124,18 @@ const App = () => {
 
   const selectContent = useCallback(
     (type, filePath) => {
-      const completePath = `${selectedCourse}/${filePath}`;
+      const completePath = `${courseInfo.localPath}/${filePath}`;
+      console.log("completePath:", completePath);
       setSelectedContent({
         type,
-        path: `http://localhost:3001/api/file/${encodeURIComponent(
-          completePath
-        )}`,
+        path: `http://localhost:3001/api/file/${encodeURIComponent(selectedCourse)}/${encodeURIComponent(filePath)}`,
+        fullPath: completePath
       });
-
+  
       if (progressUpdateTimerRef.current) {
         clearInterval(progressUpdateTimerRef.current);
       }
-
+  
       if (type === "video") {
         console.log("Setting up progress update timer for:", completePath);
         progressUpdateTimerRef.current = setInterval(() => {
@@ -146,7 +147,7 @@ const App = () => {
         }, PROGRESS_UPDATE_INTERVAL);
       }
     },
-    [selectedCourse, updateVideoProgressToBackend]
+    [selectedCourse, courseInfo, updateVideoProgressToBackend]
   );
 
   const handleWatchedChange = useCallback(
@@ -432,16 +433,16 @@ const App = () => {
               {selectedContent ? (
                 selectedContent.type === "video" ? (
                   <video
-                    src={selectedContent.path}
+                    src={`http://localhost:3001/api/file?path=${encodeURIComponent(selectedContent.fullPath.replace(/\\/g, '/'))}`}
                     controls
                     className="w-full rounded-lg shadow-2xl"
                     onTimeUpdate={handleVideoTimeUpdate}
                     onPause={handleVideoPause}
                     onPlay={handleVideoPlay}
-                    key={selectedContent.path}
+                    key={selectedContent.fullPath}
                     onLoadedMetadata={(e) => {
                       const video = e.target;
-                      const savedProgress = videoProgress[selectedContent.path];
+                      const savedProgress = videoProgress[selectedContent.fullPath];
                       if (
                         savedProgress &&
                         savedProgress.currentTime &&

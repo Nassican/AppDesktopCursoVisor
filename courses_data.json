@@ -1,0 +1,168 @@
+{
+  "Angular Pro Lleva tus bases al siguiente nivel": {
+    "id": "Angular Pro Lleva tus bases al siguiente nivel",
+    "name": "Angular Pro Lleva tus bases al siguiente nivel",
+    "description": "Descripción del curso Angular Pro Lleva tus bases al siguiente nivel",
+    "totalVideos": 142,
+    "videosWatched": 1,
+    "icon": "SiFolder",
+    "videos": {
+      "http://localhost:3001/api/file/Angular%20Pro%20Lleva%20tus%20bases%20al%20siguiente%20nivel%2F01%2520-%2520Introducci%25C3%25B3n%255C003%2520%25C2%25BFC%25C3%25B3mo%2520hacer%2520preguntas.mp4": true
+    },
+    "progress": {
+      "http://localhost:3001/api/file/Angular%20Pro%20Lleva%20tus%20bases%20al%20siguiente%20nivel/01%2520-%2520Introducci%25C3%25B3n%255C001%2520Introducci%25C3%25B3n.mp4": {
+        "currentTime": 4.063032,
+        "duration": 103.3
+      },
+      "http://localhost:3001/api/file/Angular%20Pro%20Lleva%20tus%20bases%20al%20siguiente%20nivel/01%2520-%2520Introducci%25C3%25B3n%255C003%2520%25C2%25BFC%25C3%25B3mo%2520hacer%2520preguntas.mp4": {
+        "currentTime": 3.131445,
+        "duration": 277.1
+      }
+    },
+    "localPath": "D:\\CursosSoftware\\SoftwareCursos\\backend\\cursos_videos\\Angular Pro Lleva tus bases al siguiente nivel"
+  },
+  "Astro El framework para sitios web orientados al contenido": {
+    "id": "Astro El framework para sitios web orientados al contenido",
+    "name": "Astro El framework para sitios web orientados al contenido",
+    "description": "Descripción del curso Astro El framework para sitios web orientados al contenido",
+    "totalVideos": 192,
+    "videosWatched": 1,
+    "icon": "SiFolder",
+    "videos": {
+      "http://localhost:3001/api/file/Astro%20El%20framework%20para%20sitios%20web%20orientados%20al%20contenido%2F1.%2520Introducci%25C3%25B3n%255C1.%2520Introducci%25C3%25B3n.mp4": true
+    },
+    "progress": {
+      "http://localhost:3001/api/file/Astro%20El%20framework%20para%20sitios%20web%20orientados%20al%20contenido/1.%2520Introducci%25C3%25B3n%255C1.%2520Introducci%25C3%25B3n.mp4": {
+        "currentTime": 50.974799,
+        "duration": 94.635
+      }
+    },
+    "localPath": "D:\\CursosSoftware\\SoftwareCursos\\backend\\cursos_videos\\Astro El framework para sitios web orientados al contenido"
+  },
+  "Nest Desarrollo backend escalable con Node": {
+    "id": "Nest Desarrollo backend escalable con Node",
+    "name": "Nest Desarrollo backend escalable con Node",
+    "description": "Descripción del curso Nest Desarrollo backend escalable con Node",
+    "totalVideos": 198,
+    "videosWatched": 0,
+    "icon": "SiFolder",
+    "videos": {},
+    "progress": {},
+    "localPath": "D:\\CursosSoftware\\SoftwareCursos\\backend\\cursos_videos\\Nest Desarrollo backend escalable con Node"
+  },
+  "NestJS + Microservicios Aplicaciones escalables y modulares": {
+    "id": "NestJS + Microservicios Aplicaciones escalables y modulares",
+    "name": "NestJS + Microservicios Aplicaciones escalables y modulares",
+    "description": "Descripción del curso NestJS + Microservicios Aplicaciones escalables y modulares",
+    "totalVideos": 166,
+    "videosWatched": 0,
+    "icon": "SiFolder",
+    "videos": {},
+    "progress": {
+      "http://localhost:3001/api/file/NestJS%20%2B%20Microservicios%20Aplicaciones%20escalables%20y%20modulares/2.%2520Reforzamiento%2520de%2520NestJS%255C1.%2520Introducci%25C3%25B3n%2520a%2520la%2520secci%25C3%25B3n.mp4": {
+        "currentTime": 1.327824,
+        "duration": 143.766667
+      }
+    },
+    "localPath": "D:\\CursosSoftware\\SoftwareCursos\\backend\\cursos_videos\\NestJS + Microservicios Aplicaciones escalables y modulares"
+  },
+  "NestJs + Reportes Genera PDFs desde Node": {
+    "id": "NestJs + Reportes Genera PDFs desde Node",
+    "name": "NestJs + Reportes Genera PDFs desde Node",
+    "description": "Descripción del curso NestJs + Reportes Genera PDFs desde Node",
+    "totalVideos": 70,
+    "videosWatched": 0,
+    "icon": "SiFolder",
+    "videos": {},
+    "progress": {},
+    "localPath": "D:\\CursosSoftware\\SoftwareCursos\\backend\\cursos_videos\\NestJs + Reportes Genera PDFs desde Node"
+  },
+  "Next.js El framework de React para producción": {
+    "id": "Next.js El framework de React para producción",
+    "name": "Next.js El framework de React para producción",
+    "description": "Descripción del curso Next.js El framework de React para producción",
+    "totalVideos": 354,
+    "videosWatched": 0,
+    "icon": "SiFolder",
+    "videos": {},
+    "progress": {},
+    "localPath": "D:\\CursosSoftware\\SoftwareCursos\\backend\\cursos_videos\\Next.js El framework de React para producción"
+  },
+  "Principios SOLID y Clean Code": {
+    "id": "Principios SOLID y Clean Code",
+    "name": "Principios SOLID y Clean Code",
+    "description": "Descripción del curso Principios SOLID y Clean Code",
+    "totalVideos": 56,
+    "videosWatched": 0,
+    "icon": "SiFolder",
+    "videos": {},
+    "progress": {},
+    "localPath": "D:\\CursosSoftware\\SoftwareCursos\\backend\\cursos_videos\\Principios SOLID y Clean Code"
+  },
+  "PWA Apliaciones Web Progresivas De cero a experto": {
+    "id": "PWA Apliaciones Web Progresivas De cero a experto",
+    "name": "PWA Apliaciones Web Progresivas De cero a experto",
+    "description": "Descripción del curso PWA Apliaciones Web Progresivas De cero a experto",
+    "totalVideos": 120,
+    "videosWatched": 0,
+    "icon": "SiFolder",
+    "videos": {},
+    "progress": {},
+    "localPath": "D:\\CursosSoftware\\SoftwareCursos\\backend\\cursos_videos\\PWA Apliaciones Web Progresivas De cero a experto"
+  },
+  "React De Cero a expero (Hooks y MERN)": {
+    "id": "React De Cero a expero (Hooks y MERN)",
+    "name": "React De Cero a expero (Hooks y MERN)",
+    "description": "Descripción del curso React De Cero a expero (Hooks y MERN)",
+    "totalVideos": 437,
+    "videosWatched": 0,
+    "icon": "SiFolder",
+    "videos": {},
+    "progress": {},
+    "localPath": "D:\\CursosSoftware\\SoftwareCursos\\backend\\cursos_videos\\React De Cero a expero (Hooks y MERN)"
+  },
+  "React PRO LLeva tus bases al siguiente nivel": {
+    "id": "React PRO LLeva tus bases al siguiente nivel",
+    "name": "React PRO LLeva tus bases al siguiente nivel",
+    "description": "Descripción del curso React PRO LLeva tus bases al siguiente nivel",
+    "totalVideos": 202,
+    "videosWatched": 0,
+    "icon": "SiFolder",
+    "videos": {},
+    "progress": {},
+    "localPath": "D:\\CursosSoftware\\SoftwareCursos\\backend\\cursos_videos\\React PRO LLeva tus bases al siguiente nivel"
+  },
+  "SQL de cero Tu guía práctica con PostgreSQL": {
+    "id": "SQL de cero Tu guía práctica con PostgreSQL",
+    "name": "SQL de cero Tu guía práctica con PostgreSQL",
+    "description": "Descripción del curso SQL de cero Tu guía práctica con PostgreSQL",
+    "totalVideos": 153,
+    "videosWatched": 0,
+    "icon": "SiFolder",
+    "videos": {},
+    "progress": {},
+    "localPath": "D:\\CursosSoftware\\SoftwareCursos\\backend\\cursos_videos\\SQL de cero Tu guía práctica con PostgreSQL"
+  },
+  "TypeScript Tu completa guía y manual de mano": {
+    "id": "TypeScript Tu completa guía y manual de mano",
+    "name": "TypeScript Tu completa guía y manual de mano",
+    "description": "Descripción del curso TypeScript Tu completa guía y manual de mano",
+    "totalVideos": 80,
+    "videosWatched": 0,
+    "icon": "SiFolder",
+    "videos": {},
+    "progress": {},
+    "localPath": "D:\\CursosSoftware\\SoftwareCursos\\backend\\cursos_videos\\TypeScript Tu completa guía y manual de mano"
+  },
+  "Principios SOLID y Clean Code ANDWES": {
+    "id": "Principios SOLID y Clean Code ANDWES",
+    "name": "Principios SOLID y Clean Code ANDWES",
+    "description": "Descripción del curso Principios SOLID y Clean Code ANDWES",
+    "totalVideos": 56,
+    "videosWatched": 0,
+    "icon": "SiFolder",
+    "videos": {},
+    "progress": {},
+    "localPath": "D:\\CursosSoftware\\Principios SOLID y Clean Code ANDWES"
+  }
+}
