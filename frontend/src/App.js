@@ -88,7 +88,6 @@ const App = () => {
       console.error("Error fetching folder structure:", error);
     }
   };
-  
 
   const toggleFolder = (path) => {
     setExpandedFolders((prev) => ({
@@ -128,14 +127,16 @@ const App = () => {
       console.log("completePath:", completePath);
       setSelectedContent({
         type,
-        path: `http://localhost:3001/api/file/${encodeURIComponent(selectedCourse)}/${encodeURIComponent(filePath)}`,
-        fullPath: completePath
+        path: `http://localhost:3001/api/file?path=${encodeURIComponent(
+          completePath
+        )}`,
+        fullPath: completePath,
       });
-  
+
       if (progressUpdateTimerRef.current) {
         clearInterval(progressUpdateTimerRef.current);
       }
-  
+
       if (type === "video") {
         console.log("Setting up progress update timer for:", completePath);
         progressUpdateTimerRef.current = setInterval(() => {
@@ -147,7 +148,7 @@ const App = () => {
         }, PROGRESS_UPDATE_INTERVAL);
       }
     },
-    [selectedCourse, courseInfo, updateVideoProgressToBackend]
+    [courseInfo, updateVideoProgressToBackend]
   );
 
   const handleWatchedChange = useCallback(
@@ -338,8 +339,8 @@ const App = () => {
               : value.type === "html"
               ? "text-green-500"
               : "text-gray-500";
-          const completePath = `${selectedCourse}/${value.path}`;
-          const filePath = `http://localhost:3001/api/file/${encodeURIComponent(
+          const completePath = `${courseInfo.localPath}/${value.path}`;
+          const filePath = `http://localhost:3001/api/file?path=${encodeURIComponent(
             completePath
           )}`;
           const progress = videoProgress[filePath];
@@ -433,22 +434,26 @@ const App = () => {
               {selectedContent ? (
                 selectedContent.type === "video" ? (
                   <video
-                    src={`http://localhost:3001/api/file?path=${encodeURIComponent(selectedContent.fullPath.replace(/\\/g, '/'))}`}
+                    src={`http://localhost:3001/api/file?path=${encodeURIComponent(
+                      selectedContent.fullPath
+                    )}`}
                     controls
                     className="w-full rounded-lg shadow-2xl"
                     onTimeUpdate={handleVideoTimeUpdate}
                     onPause={handleVideoPause}
                     onPlay={handleVideoPlay}
                     key={selectedContent.fullPath}
-                    onLoadedMetadata={(e) => {
-                      const video = e.target;
-                      const savedProgress = videoProgress[selectedContent.fullPath];
-                      if (
-                        savedProgress &&
-                        savedProgress.currentTime &&
-                        isFinite(savedProgress.currentTime)
-                      ) {
-                        video.currentTime = savedProgress.currentTime;
+                    ref={(videoElement) => {
+                      if (videoElement) {
+                        const savedProgress =
+                          videoProgress[selectedContent.fullPath];
+                        if (
+                          savedProgress &&
+                          savedProgress.currentTime &&
+                          isFinite(savedProgress.currentTime)
+                        ) {
+                          videoElement.currentTime = savedProgress.currentTime;
+                        }
                       }
                     }}
                   />

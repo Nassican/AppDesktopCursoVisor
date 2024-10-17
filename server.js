@@ -105,7 +105,12 @@ async function initializeCoursesData() {
 }
 
 function encodePathComponent(component) {
-  return component.split('\\').join('/').split('/').map(encodeURIComponent).join('/');
+  return component
+    .split("\\")
+    .join("/")
+    .split("/")
+    .map(encodeURIComponent)
+    .join("/");
 }
 
 async function getDirectoryStructure(dir, baseDir = "") {
@@ -216,7 +221,7 @@ app.get("/api/file/:encodedPath(*)", async (req, res) => {
 app.get("/api/file", async (req, res) => {
   try {
     const { path: encodedPath } = req.query;
-    
+
     if (!encodedPath) {
       return res.status(400).json({ error: "Path not provided" });
     }
@@ -271,10 +276,10 @@ app.post("/api/progress/:courseId", async (req, res) => {
       coursesData[courseId] = { videos: {}, progress: {} };
     }
     coursesData[courseId].progress[videoPath] = progress;
+    let courseData = coursesData[courseId];
 
     // Actualizar total de videos y videos vistos
-    const courseFolder = path.join(DEFAULT_FOLDER, courseId);
-    const structure = await getDirectoryStructure(courseFolder);
+    const structure = await getDirectoryStructure(courseData.localPath);
     const totalVideos = countVideos(structure);
     const videosWatched = countWatchedVideos(coursesData[courseId]);
 
