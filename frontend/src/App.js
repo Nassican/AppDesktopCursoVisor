@@ -19,7 +19,7 @@ const App = () => {
   const [structure, setStructure] = useState(null);
   const [selectedContent, setSelectedContent] = useState(null);
   const [expandedFolders, setExpandedFolders] = useState({});
-  const [, setFolderPath] = useState("");
+  const [folderPath, setFolderPath] = useState("");
   const [videoProgress, setVideoProgress] = useState({});
   const [videoHistory, setVideoHistory] = useState({});
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -27,9 +27,6 @@ const App = () => {
   const lastProgressUpdateRef = useRef({});
   const [isVideoPaused, setIsVideoPaused] = useState(true);
   const [courseInfo, setCourseInfo] = useState(null);
-
-  const progressUpdateQueue = useRef({});
-  const isUpdatingProgress = useRef(false);
 
   useEffect(() => {
     if (selectedCourse) {
@@ -81,7 +78,7 @@ const App = () => {
     try {
       const response = await axios.post(
         "http://localhost:3001/api/folder-structure",
-        { courseId: selectedCourse }
+        { folderPath }
       );
       setStructure(response.data);
     } catch (error) {
@@ -123,14 +120,12 @@ const App = () => {
 
   const selectContent = useCallback(
     (type, filePath) => {
-      const completePath = `${courseInfo.localPath}/${filePath}`;
-      console.log("completePath:", completePath);
+      const completePath = `${selectedCourse}/${filePath}`;
       setSelectedContent({
         type,
-        path: `http://localhost:3001/api/file?path=${encodeURIComponent(
+        path: `http://localhost:3001/api/file/${encodeURIComponent(
           completePath
         )}`,
-        fullPath: completePath,
       });
 
       if (progressUpdateTimerRef.current) {
@@ -148,7 +143,7 @@ const App = () => {
         }, PROGRESS_UPDATE_INTERVAL);
       }
     },
-    [courseInfo, updateVideoProgressToBackend]
+    [selectedCourse, updateVideoProgressToBackend]
   );
 
   const handleWatchedChange = useCallback(
@@ -176,42 +171,7 @@ const App = () => {
     }));
     localStorage.setItem(`videoProgress_${path}`, JSON.stringify(newProgress));
     lastProgressUpdateRef.current[path] = newProgress;
-
-    // Añadir la actualización a la cola
-    progressUpdateQueue.current[path] = newProgress;
   }, []);
-
-  const sendProgressUpdatesToServer = useCallback(async () => {
-    if (isUpdatingProgress.current) return;
-    isUpdatingProgress.current = true;
-
-    const updates = { ...progressUpdateQueue.current };
-    progressUpdateQueue.current = {};
-
-    for (const [path, progress] of Object.entries(updates)) {
-      try {
-        await axios.post(
-          `http://localhost:3001/api/progress/${selectedCourse}`,
-          {
-            path,
-            progress,
-          }
-        );
-        console.log("Progress successfully updated to backend for:", path);
-      } catch (error) {
-        console.error("Error updating progress to backend:", error);
-        // Volver a añadir la actualización fallida a la cola
-        progressUpdateQueue.current[path] = progress;
-      }
-    }
-
-    isUpdatingProgress.current = false;
-  }, [selectedCourse]);
-
-  useEffect(() => {
-    const intervalId = setInterval(sendProgressUpdatesToServer, 30000); // Enviar actualizaciones cada 30 segundos
-    return () => clearInterval(intervalId);
-  }, [sendProgressUpdatesToServer]);
 
   const handleVideoTimeUpdate = useCallback(
     (e) => {
@@ -339,8 +299,8 @@ const App = () => {
               : value.type === "html"
               ? "text-green-500"
               : "text-gray-500";
-          const completePath = `${courseInfo.localPath}/${value.path}`;
-          const filePath = `http://localhost:3001/api/file?path=${encodeURIComponent(
+          const completePath = `${selectedCourse}/${value.path}`;
+          const filePath = `http://localhost:3001/api/file/${encodeURIComponent(
             completePath
           )}`;
           const progress = videoProgress[filePath];
@@ -434,26 +394,22 @@ const App = () => {
               {selectedContent ? (
                 selectedContent.type === "video" ? (
                   <video
-                    src={`http://localhost:3001/api/file?path=${encodeURIComponent(
-                      selectedContent.fullPath
-                    )}`}
+                    src={selectedContent.path}
                     controls
                     className="w-full rounded-lg shadow-2xl"
                     onTimeUpdate={handleVideoTimeUpdate}
                     onPause={handleVideoPause}
                     onPlay={handleVideoPlay}
-                    key={selectedContent.fullPath}
-                    ref={(videoElement) => {
-                      if (videoElement) {
-                        const savedProgress =
-                          videoProgress[selectedContent.fullPath];
-                        if (
-                          savedProgress &&
-                          savedProgress.currentTime &&
-                          isFinite(savedProgress.currentTime)
-                        ) {
-                          videoElement.currentTime = savedProgress.currentTime;
-                        }
+                    key={selectedContent.path}
+                    onLoadedMetadata={(e) => {
+                      const video = e.target;
+                      const savedProgress = videoProgress[selectedContent.path];
+                      if (
+                        savedProgress &&
+                        savedProgress.currentTime &&
+                        isFinite(savedProgress.currentTime)
+                      ) {
+                        video.currentTime = savedProgress.currentTime;
                       }
                     }}
                   />
