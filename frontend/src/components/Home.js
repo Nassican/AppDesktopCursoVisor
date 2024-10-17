@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Folder } from "lucide-react";
 import * as SiIcons from "react-icons/si";
@@ -41,45 +41,13 @@ const Home = ({ onCourseSelect }) => {
     }
   };
 
-  const handleAddNewCourse = async () => {
-    try {
-      if (
-        !window.electron ||
-        typeof window.electron.openFolder !== "function"
-      ) {
-        throw new Error("La función openFolder no está disponible");
-      }
-      const folderPath = await window.electron.openFolder();
-      if (folderPath) {
-        const response = await axios.post(
-          "http://localhost:3001/api/add-course-folder",
-          { folderPath }
-        );
-        if (response.data.success) {
-          alert("Nuevo curso agregado correctamente");
-          fetchCourses(); // Actualiza la lista de cursos
-        }
-      }
-    } catch (error) {
-      console.error("Error al agregar el nuevo curso:", error);
-      alert("Error al agregar el nuevo curso: " + error.message);
-    }
-  };
-
   return (
     <div className="p-8 bg-gray-100">
       <div className="max-w-screen-xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Cursos disponibles</h1>
-        <button
-          onClick={handleAddNewCourse}
-          className="mb-4 bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Seleccionar carpeta de cursos
-        </button>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {courses.map((course) => {
             const IconComponent =
-              // Key in Home.js
               course.icon && SiIcons[course.icon]
                 ? SiIcons[course.icon]
                 : Folder;
