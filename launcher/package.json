@@ -10,10 +10,12 @@
     "outputPath": "dist"
   },
   "scripts": {
-    "build": "pkg ."
+    "build": "pkg . && node change-icon.js"
   },
   "devDependencies": {
-    "pkg": "^5.8.1",
+    "pkg": "^5.8.1"
+  },
+  "dependencies": {
     "rcedit": "^4.0.1"
   }
 }
