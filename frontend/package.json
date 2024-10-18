@@ -68,6 +68,29 @@
     ],
     "directories": {
       "buildResources": "assets"
-    }
+    },
+    "win": {
+      "target": [
+        {
+          "target": "portable",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    },
+    "portable": {
+      "artifactName": "${productName}.exe"
+    },
+    "extraResources": [
+      {
+        "from": "./build",
+        "to": "build",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "asar": true
   }
 }

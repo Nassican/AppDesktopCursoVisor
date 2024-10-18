@@ -357,9 +357,7 @@ const App = () => {
         <div className="flex flex-grow overflow-hidden">
           <div className="w-1/4 bg-white border-r shadow-md overflow-y-auto">
             <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="text-xl font-bold text-gray-800">
-                CursoVisorHOLAAA
-              </h2>
+              <h2 className="text-xl font-bold text-gray-800">CursoVisor</h2>
               <button
                 onClick={goToHome}
                 className="text-blue-500 hover:text-blue-700"

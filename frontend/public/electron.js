@@ -1,58 +1,56 @@
 const { app, BrowserWindow } = require("electron");
 const path = require("path");
-let isDev, mainWindow, server;
 
-(async () => {
-  isDev = await import("electron-is-dev").then((module) => module.default);
+// Determinar si estamos en desarrollo o producción
+const isDev = !app.isPackaged;
 
-  function createWindow() {
-    mainWindow = new BrowserWindow({
-      width: 1280,
-      height: 720,
-      webPreferences: {
-        nodeIntegration: true,
-        contextIsolation: false,
-        webSecurity: true,
-        allowRunningInsecureContent: false,
-      },
-    });
+let mainWindow;
 
-    mainWindow.loadURL(
-      isDev
-        ? "http://localhost:3000"
-        : `file://${path.join(__dirname, "../build/index.html")}`
-    );
+function createWindow() {
+  mainWindow = new BrowserWindow({
+    width: 1200,
+    height: 800,
+    webPreferences: {
+      nodeIntegration: true,
+      contextIsolation: false,
+      webSecurity: false,
+    },
+  });
 
-    // Evitar recargar la ventana
-    mainWindow.webContents.on("beforeunload", (event) => {
-      event.preventDefault(); // Evitar la recarga
-      event.returnValue = ""; // Para mostrar un mensaje de confirmación (opcional)
-    });
-
-    if (isDev) {
-      mainWindow.webContents.openDevTools();
-    }
+  // Cargar la aplicación
+  if (isDev) {
+    // En desarrollo, carga desde el servidor de desarrollo
+    mainWindow.loadURL("http://localhost:3000");
+    // Abrir DevTools
+    mainWindow.webContents.openDevTools();
+  } else {
+    // En producción, carga desde los archivos construidos
+    mainWindow.loadFile(path.join(__dirname, "../build/index.html"));
   }
 
-  app.whenReady().then(() => {
+  // Cuando la ventana se cierre
+  mainWindow.on("closed", () => {
+    mainWindow = null;
+  });
+}
+
+// Crear ventana cuando la app esté lista
+app.whenReady().then(createWindow);
+
+// Cerrar cuando todas las ventanas estén cerradas
+app.on("window-all-closed", () => {
+  if (process.platform !== "darwin") {
+    app.quit();
+  }
+});
+
+app.on("activate", () => {
+  if (mainWindow === null) {
     createWindow();
-  });
+  }
+});
 
-  app.on("window-all-closed", () => {
-    if (process.platform !== "darwin") {
-      app.quit();
-    }
-  });
-
-  app.on("activate", () => {
-    if (BrowserWindow.getAllWindows().length === 0) {
-      createWindow();
-    }
-  });
-
-  app.on("quit", () => {
-    if (server) {
-      server.close();
-    }
-  });
-})();
+// Manejar errores no capturados
+process.on("uncaughtException", (error) => {
+  console.error("Error no capturado:", error);
+});

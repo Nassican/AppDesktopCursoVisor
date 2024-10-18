@@ -7,8 +7,18 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-const DEFAULT_FOLDER = path.join(__dirname, "cursos_videos");
-const COURSES_DATA_FILE = path.join(__dirname, "courses_data.json");
+function getBasePath() {
+  // En desarrollo, usa __dirname
+  if (process.pkg === undefined) {
+    return __dirname;
+  }
+  // En producción (ejecutable), usa process.execPath
+  return path.dirname(process.execPath);
+}
+
+const BASE_PATH = getBasePath();
+const DEFAULT_FOLDER = path.join(BASE_PATH, "cursos_videos");
+const COURSES_DATA_FILE = path.join(BASE_PATH, "courses_data.json");
 
 async function initializeCoursesData() {
   try {
@@ -20,7 +30,7 @@ async function initializeCoursesData() {
   } catch (error) {
     // Si el archivo no existe, inicializar la estructura
     console.log("Inicializando la estructura de cursos...");
-    const coursesDir = path.join(__dirname, "cursos_videos");
+    const coursesDir = path.join(BASE_PATH, "cursos_videos");
     const courses = await fs.readdir(coursesDir, { withFileTypes: true });
     let coursesData = {};
 
@@ -243,7 +253,7 @@ app.get("/api/video-history/:courseId", async (req, res) => {
 
 app.get("/api/courses", async (req, res) => {
   try {
-    const coursesDir = path.join(__dirname, "cursos_videos");
+    const coursesDir = path.join(BASE_PATH, "cursos_videos");
     const courses = await fs.readdir(coursesDir, { withFileTypes: true });
     const coursesData = await readCoursesDataFile();
 

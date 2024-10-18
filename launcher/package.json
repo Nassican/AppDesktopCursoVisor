@@ -1,0 +1,19 @@
+{
+  "name": "app-launcher",
+  "version": "1.0.0",
+  "main": "launcher.js",
+  "bin": "launcher.js",
+  "pkg": {
+    "targets": [
+      "node18-win-x64"
+    ],
+    "outputPath": "dist"
+  },
+  "scripts": {
+    "build": "pkg ."
+  },
+  "devDependencies": {
+    "pkg": "^5.8.1",
+    "rcedit": "^4.0.1"
+  }
+}
