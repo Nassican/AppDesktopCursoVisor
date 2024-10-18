@@ -21,10 +21,10 @@ if (!fs.existsSync(iconPath)) {
 rcedit(exePath, {
   icon: iconPath,
   "version-string": {
-    FileDescription: "Launcher de la aplicación Curso Visor",
-    ProductName: "App Launcher Curso Visor",
-    CompanyName: "Nassican",
-    LegalCopyright: "© 2024 Nassican",
+    FileDescription: "Launcher de la aplicación",
+    ProductName: "App Launcher",
+    CompanyName: "Tu Compañía",
+    LegalCopyright: "© 2023 Tu Compañía",
     OriginalFilename: "app-launcher.exe",
     FileVersion: "1.0.0",
     ProductVersion: "1.0.0",
