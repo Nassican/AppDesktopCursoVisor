@@ -1,89 +1,121 @@
 # CursoVisor
 
-**CursoVisor** es una aplicación que permite la visualización y el seguimiento de cursos a través de una estructura de carpetas de video y HTML. El sistema permite gestionar el progreso de los videos y mantener un registro de los videos vistos por cada usuario. La aplicación cuenta con un frontend en React y un backend en Express.js.
+CursoVisor es una aplicación de escritorio para visualizar y gestionar cursos de video. Permite a los usuarios navegar por una estructura de carpetas, reproducir videos, ver contenido HTML y realizar un seguimiento del progreso de los cursos.
 
-## Características
+## Estructura del proyecto
 
-- **Visualización de cursos**: Interfaz de usuario intuitiva para navegar por carpetas y visualizar archivos de video y HTML.
-- **Progreso de videos**: Guarda el progreso de visualización de cada video para que puedas continuar desde donde dejaste.
-- **Historial de visualización**: Permite marcar los videos como vistos, con un sistema de sincronización entre el frontend y el backend.
+El proyecto está dividido en tres partes principales:
 
-## Requisitos
+1. Frontend (@frontend)
+2. Backend (@backend)
+3. Launcher (@launcher)
 
-- Node.js v12.0.0 o superior
-- npm v6.0.0 o superior
+## Requisitos previos
 
-## Instalación
+- Node.js (versión 18 o superior)
+- npm (normalmente viene con Node.js)
 
-1. Clona este repositorio:
-   ```bash
-   git clone https://github.com/Nassican/CursoVisor.git
-   cd CursoVisor
-   ```
+## Configuración y ejecución
 
-2. Instala las dependencias para el frontend y el backend usando el siguiente comando:
-   ```bash
-   npm run install:all
-   ```
+### 1. Instalación de dependencias
 
-3. Crea una carpeta `cursos_videos` en el directorio `backend` y coloca allí los archivos de video y HTML que se usarán para los cursos:
-   ```bash
-   mkdir backend/cursos_videos
-   ```
+Desde la raíz del proyecto, ejecuta:
 
-4. Inicia la aplicación:
-   ```bash
-   npm start
-   ```
-
-   Este comando ejecutará el frontend y el backend en paralelo:
-   - El **backend** estará disponible en `http://localhost:3001`.
-   - El **frontend** estará disponible en `http://localhost:3000`.
-
-## Estructura del Proyecto
-
-```plaintext
-CursoVisor/
-├── backend/
-│   ├── server.js                 # Servidor backend en Express.js
-│   ├── cursos_videos/            # Carpeta para los videos de los cursos
-│   ├── video_progress.json       # Archivo de progreso de videos
-│   └── video_history.json        # Archivo de historial de videos
-├── frontend/
-│   ├── public/                   # Archivos públicos de React
-│   └── src/                      # Código fuente de la aplicación frontend
-└── package.json                  # Archivo de configuración de npm
+```bash
+npm run install:all
 ```
 
-## Scripts de npm
+Este comando instalará las dependencias para el proyecto principal, el frontend, el backend y el launcher.
 
-- **`npm start`**: Inicia el backend y el frontend en paralelo.
-- **`npm run start:backend`**: Inicia solo el servidor backend.
-- **`npm run start:frontend`**: Inicia solo el servidor frontend.
-- **`npm run install:all`**: Instala todas las dependencias para el frontend y el backend.
+### 2. Construcción de los ejecutables
 
-## Tecnologías Utilizadas
+Para construir todos los ejecutables, ejecuta:
 
-- **Frontend**: React, Tailwind CSS, Axios
-- **Backend**: Node.js, Express.js
-- **Gestión de dependencias**: npm
-- **Desarrollo paralelo**: concurrently
+```bash
+npm run build:all
+```
 
-## Uso
+Esto ejecutará los comandos de construcción para el frontend, el backend y el launcher.
 
-1. Navega a `http://localhost:3000` en tu navegador.
-2. Visualiza los videos y archivos HTML desde la interfaz, guarda tu progreso y marca los videos como vistos.
-3. Todo el progreso se guarda en el backend y puede ser recuperado cuando vuelvas a iniciar sesión.
+O si solo deseas construir uno de ellos, puedes ejecutar:
 
-## Contribución
+#### Frontend
 
-Si deseas contribuir a este proyecto, por favor:
-- Realiza un fork del repositorio.
-- Crea una nueva rama (`git checkout -b feature/nueva-feature`).
-- Realiza tus cambios y haz commit (`git commit -m 'Añadir nueva feature'`).
-- Haz push de tus cambios a tu fork (`git push origin feature/nueva-feature`).
-- Crea un Pull Request.
+Para construir el ejecutable del frontend, ejecuta:
 
-## Licencia
+```bash
+npm run build
+```
 
-Este proyecto está bajo la licencia ISC.
+Esto generará un ejecutable en la carpeta `dist`.
+
+#### Backend
+
+Para construir el ejecutable del backend, ejecuta:
+
+```bash
+npm run build
+```
+
+Esto generará un ejecutable en la carpeta `dist`.
+
+#### Launcher
+
+Para construir el ejecutable del launcher, ejecuta:
+
+```bash
+npm run build
+```
+
+Esto generará un ejecutable llamado `app-launcher.exe` en la carpeta `dist`.
+
+### 3. Preparación de la carpeta de distribución
+
+1. Crea una nueva carpeta llamada `CursoVisor`.
+2. Copia los siguientes archivos y carpetas a `CursoVisor`:
+   - El ejecutable `frontend.exe` del frontend de `@frontend/dist`
+   - El ejecutable `server.exe` del backend de `@backend/dist`
+   - El ejecutable `app-launcher.exe` de `@launcher/dist`
+   - Crea una carpeta llamada `cursos_videos` dentro de `CursoVisor`
+
+### 4. Ejecución de la aplicación
+
+Para ejecutar la aplicación, simplemente haz doble clic en `app-launcher.exe` dentro de la carpeta `CursoVisor`. Esto iniciará el servidor backend y luego lanzará la aplicación frontend.
+
+## Uso de la aplicación
+
+1. Al iniciar la aplicación, verás una lista de cursos disponibles.
+2. Haz clic en un curso para ver su contenido.
+3. Navega por la estructura de carpetas en el panel izquierdo.
+4. Haz clic en un archivo de video o HTML para visualizarlo en el panel derecho.
+5. El progreso de los videos se guarda automáticamente.
+6. Puedes marcar videos como vistos utilizando las casillas de verificación.
+
+## Estructura de cursos
+
+Los cursos deben estar organizados en la carpeta `cursos_videos` con la siguiente estructura:
+
+```
+cursos_videos/
+├── Curso1/
+│ ├── Módulo1/
+│ │ ├── video1.mp4
+│ │ ├── documento1.html
+│ │ └── ...
+│ ├── Módulo2/
+│ │ └── ...
+│ └── ...
+├── Curso2/
+│ └── ...
+└── ...
+```
+
+## Notas adicionales
+
+- Asegúrate de que la carpeta `cursos_videos` contenga al menos un curso para que la aplicación funcione correctamente.
+- La aplicación guarda el progreso y el historial de visualización localmente.
+- Puedes cambiar los iconos de los cursos haciendo clic en "Cambiar icono" en la página principal.
+
+Licencia
+
+Este proyecto está bajo la licencia MIT.

@@ -6,7 +6,11 @@
     "start": "concurrently \"npm run start:backend\" \"npm run start:frontend\"",
     "start:backend": "cd backend && node server.js",
     "start:frontend": "cd frontend && npm start",
-    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install"
+    "install:all": "npm install && cd frontend && npm install && cd ../backend && npm install && cd ../launcher && npm install",
+    "build:frontend": "cd frontend && npm run build",
+    "build:backend": "cd backend && npm run build",
+    "build:launcher": "cd launcher && npm run build",
+    "build:all": "npm run build:frontend && npm run build:backend && npm run build:launcher"
   },
   "keywords": [],
   "author": "",
