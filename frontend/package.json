@@ -70,6 +70,7 @@
       "buildResources": "assets"
     },
     "win": {
+      "icon": "public/catppuccin--video.ico",
       "target": [
         {
           "target": "portable",
