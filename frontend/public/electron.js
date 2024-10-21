@@ -15,6 +15,8 @@ function createWindow() {
       contextIsolation: false,
       webSecurity: false,
     },
+    icon: path.join(__dirname, "../public/catppuccin--video.ico"),
+    title: "CursoVisor",
   });
 
   // Cargar la aplicación
