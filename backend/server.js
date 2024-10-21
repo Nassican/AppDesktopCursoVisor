@@ -22,13 +22,11 @@ const COURSES_DATA_FILE = path.join(BASE_PATH, "courses_data.json");
 
 async function initializeCoursesData() {
   try {
-    // Verificar si el archivo courses_data.json ya existe
     await fs.access(COURSES_DATA_FILE);
     console.log(
       "El archivo courses_data.json ya existe. No se inicializará la estructura."
     );
   } catch (error) {
-    // Si el archivo no existe, inicializar la estructura
     console.log("Inicializando la estructura de cursos...");
     const coursesDir = path.join(BASE_PATH, "cursos_videos");
     const courses = await fs.readdir(coursesDir, { withFileTypes: true });
@@ -39,16 +37,16 @@ async function initializeCoursesData() {
       const structure = await getDirectoryStructure(
         path.join(coursesDir, courseId)
       );
-      const totalVideos = countVideos(structure);
+      const totalFiles = countFiles(structure);
 
       coursesData[courseId] = {
         id: courseId,
         name: courseId.replace(/_/g, " "),
         description: `Descripción del curso ${courseId}`,
-        totalVideos,
-        videosWatched: 0,
-        icon: "SiFolder", // Icono por defecto
-        videos: {},
+        totalFiles,
+        filesWatched: 0,
+        icon: "SiFolder",
+        files: {},
         progress: {},
       };
     }
@@ -81,9 +79,9 @@ async function getDirectoryStructure(dir, baseDir = "") {
         );
       } else {
         const ext = path.extname(file.name).toLowerCase();
-        if (ext === ".mp4" || ext === ".html") {
+        if (ext === ".mp4" || ext === ".html" || ext === ".pdf") {
           structure[file.name] = {
-            type: ext === ".mp4" ? "video" : "html",
+            type: ext === ".mp4" ? "video" : ext === ".html" ? "html" : "pdf",
             path: encodedPath,
             watched: false,
           };
@@ -127,18 +125,28 @@ app.post("/api/folder-structure", async (req, res) => {
   }
 });
 
-app.get("/api/file/:encodedPath(*)", (req, res) => {
+app.get("/api/file/:encodedPath(*)", async (req, res) => {
   const filePath = decodeURIComponent(req.params.encodedPath);
   const fullPath = path.join(DEFAULT_FOLDER, filePath);
 
-  fs.access(fullPath)
-    .then(() => {
+  try {
+    await fs.access(fullPath);
+    const fileContent = await fs.readFile(fullPath);
+
+    if (path.extname(fullPath).toLowerCase() === ".pdf") {
+      res.contentType("application/pdf");
+      res.set(
+        "Content-Disposition",
+        `inline; filename="${path.basename(filePath)}"`
+      );
+      res.send(fileContent);
+    } else {
       res.sendFile(fullPath);
-    })
-    .catch((error) => {
-      console.error("Error: File not found", fullPath, error);
-      res.status(404).send("File not found");
-    });
+    }
+  } catch (error) {
+    console.error("Error: File not found or inaccessible", fullPath, error);
+    res.status(404).send("File not found or inaccessible");
+  }
 });
 
 app.get("/api/progress/:courseId", async (req, res) => {
@@ -146,7 +154,7 @@ app.get("/api/progress/:courseId", async (req, res) => {
     const { courseId } = req.params;
     const coursesData = await readCoursesDataFile();
     const courseData = coursesData[courseId] || {
-      videos: {},
+      files: {},
       progress: {},
       icon: {},
     };
@@ -174,18 +182,18 @@ app.post("/api/progress/:courseId", async (req, res) => {
 
     let coursesData = await readCoursesDataFile();
     if (!coursesData[courseId]) {
-      coursesData[courseId] = { videos: {}, progress: {} };
+      coursesData[courseId] = { files: {}, progress: {} };
     }
     coursesData[courseId].progress[videoPath] = progress;
 
     // Actualizar total de videos y videos vistos
     const courseFolder = path.join(DEFAULT_FOLDER, courseId);
     const structure = await getDirectoryStructure(courseFolder);
-    const totalVideos = countVideos(structure);
-    const videosWatched = countWatchedVideos(coursesData[courseId]);
+    const totalFiles = countFiles(structure);
+    const filesWatched = countWatchedFiles(coursesData[courseId]);
 
-    coursesData[courseId].totalVideos = totalVideos;
-    coursesData[courseId].videosWatched = videosWatched;
+    coursesData[courseId].totalFiles = totalFiles;
+    coursesData[courseId].filesWatched = filesWatched;
 
     await writeCoursesDataFile(coursesData);
 
@@ -217,37 +225,40 @@ app.post("/api/courses/:courseId/icon", async (req, res) => {
   }
 });
 
-app.post("/api/video-history/:courseId", async (req, res) => {
+app.post("/api/file-history/:courseId", async (req, res) => {
   try {
     const { courseId } = req.params;
-    const { videoPath, isWatched } = req.body;
+    const { filePath, isWatched } = req.body;
     let coursesData = await readCoursesDataFile();
     if (!coursesData[courseId]) {
-      coursesData[courseId] = { videos: {}, progress: {} };
+      coursesData[courseId] = { files: {}, progress: {} };
     }
-    coursesData[courseId].videos[videoPath] = isWatched;
+    if (!coursesData[courseId].files) {
+      coursesData[courseId].files = {};
+    }
+    coursesData[courseId].files[filePath] = isWatched;
 
-    // Actualizar el conteo de videos vistos
-    const videosWatched = countWatchedVideos(coursesData[courseId]);
-    coursesData[courseId].videosWatched = videosWatched;
+    // Actualizar el conteo de archivos vistos
+    const filesWatched = countWatchedFiles(coursesData[courseId]);
+    coursesData[courseId].filesWatched = filesWatched;
 
     await writeCoursesDataFile(coursesData);
     res.json({ success: true });
   } catch (error) {
-    console.error("Error updating history:", error);
-    res.status(500).json({ error: "Error updating history" });
+    console.error("Error updating file history:", error);
+    res.status(500).json({ error: "Error updating file history" });
   }
 });
 
-app.get("/api/video-history/:courseId", async (req, res) => {
+app.get("/api/file-history/:courseId", async (req, res) => {
   try {
     const { courseId } = req.params;
     const coursesData = await readCoursesDataFile();
-    const courseData = coursesData[courseId] || { videos: {} };
-    res.json({ videos: courseData.videos });
+    const courseData = coursesData[courseId] || { files: {} };
+    res.json({ files: courseData.files });
   } catch (error) {
-    console.error("Error reading video history:", error);
-    res.status(500).json({ error: "Error reading video history" });
+    console.error("Error reading file history:", error);
+    res.status(500).json({ error: "Error reading file history" });
   }
 });
 
@@ -266,14 +277,14 @@ app.get("/api/courses", async (req, res) => {
           const structure = await getDirectoryStructure(
             path.join(coursesDir, courseId)
           );
-          const totalVideos = countVideos(structure);
+          const totalFiles = countFiles(structure);
 
           return {
             id: courseId,
             name: courseId.replace(/_/g, " "),
             description: `Descripción del curso ${courseId}`,
-            totalVideos,
-            videosWatched: courseData.videosWatched || 0,
+            totalFiles,
+            filesWatched: courseData.filesWatched || 0,
             icon: courseData.icon || "Folder", // Añadimos esta línea
           };
         })
@@ -301,37 +312,41 @@ app.get("/api/courses/:courseId", async (req, res) => {
   }
 });
 
-function countVideos(structure) {
+function countFiles(structure) {
   let count = 0;
   for (const key in structure) {
-    if (typeof structure[key] === "object" && structure[key].type === "video") {
-      count++;
+    if (typeof structure[key] === "object" && structure[key].type) {
+      if (["video", "html", "pdf"].includes(structure[key].type)) {
+        count++;
+      }
     } else if (typeof structure[key] === "object" && !structure[key].type) {
-      count += countVideos(structure[key]);
+      count += countFiles(structure[key]);
     }
   }
   return count;
 }
 
-function countWatchedVideos(courseData) {
-  const { videos, progress } = courseData;
-  const watchedVideos = new Set();
+function countWatchedFiles(courseData) {
+  const { files, progress } = courseData;
+  const watchedFiles = new Set();
 
-  // Contar videos marcados como vistos
-  for (const [videoPath, isWatched] of Object.entries(videos)) {
-    if (isWatched) {
-      watchedVideos.add(videoPath);
+  if (files) {
+    for (const [filePath, isWatched] of Object.entries(files)) {
+      if (isWatched) {
+        watchedFiles.add(filePath);
+      }
     }
   }
 
-  // Contar videos con progreso completo
-  for (const [videoPath, videoProgress] of Object.entries(progress)) {
-    if (videoProgress.currentTime === videoProgress.duration) {
-      watchedVideos.add(videoPath);
+  if (progress) {
+    for (const [filePath, fileProgress] of Object.entries(progress)) {
+      if (fileProgress.currentTime === fileProgress.duration) {
+        watchedFiles.add(filePath);
+      }
     }
   }
 
-  return watchedVideos.size;
+  return watchedFiles.size;
 }
 
 initializeCoursesData()

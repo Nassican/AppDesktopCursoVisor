@@ -6,12 +6,14 @@ import {
   FileVideo,
   FileText,
   File,
+  FileTextIcon as FilePdf,
   Home as HomeIcon,
 } from "lucide-react";
 import axios from "axios";
-import { videoHistoryService } from "./components/videoHistoryService";
+import { fileHistoryService } from "./components/fileHistoryService";
 import Home from "./components/Home";
 import * as SiIcons from "react-icons/si";
+import PDFViewer from "./components/PDFViewer";
 
 const PROGRESS_UPDATE_INTERVAL = 10000; // 10 seconds
 
@@ -45,7 +47,7 @@ const App = () => {
 
   const fetchVideoHistory = async () => {
     if (selectedCourse) {
-      const history = await videoHistoryService.fetchHistory(selectedCourse);
+      const history = await fileHistoryService.fetchHistory(selectedCourse);
       setVideoHistory(history);
     }
   };
@@ -145,24 +147,6 @@ const App = () => {
     },
     [selectedCourse, updateVideoProgressToBackend]
   );
-
-  const handleWatchedChange = useCallback(
-    async (path, isWatched) => {
-      if (selectedCourse) {
-        const updatedHistory = await videoHistoryService.updateHistory(
-          selectedCourse,
-          path,
-          isWatched
-        );
-        if (updatedHistory) {
-          setVideoHistory(updatedHistory);
-        }
-      }
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [selectedCourse, videoHistoryService]
-  );
-
   const updateVideoProgressLocally = useCallback((path, newProgress) => {
     console.log("Updating video progress locally:", path, newProgress);
     setVideoProgress((prev) => ({
@@ -172,6 +156,34 @@ const App = () => {
     localStorage.setItem(`videoProgress_${path}`, JSON.stringify(newProgress));
     lastProgressUpdateRef.current[path] = newProgress;
   }, []);
+
+  const handleWatchedChange = useCallback(
+    async (path, isWatched) => {
+      if (selectedCourse) {
+        const updatedHistory = await fileHistoryService.updateHistory(
+          selectedCourse,
+          path,
+          isWatched
+        );
+        if (updatedHistory) {
+          setVideoHistory(updatedHistory);
+          // Actualizar el conteo local de archivos vistos
+          setCourseInfo((prevInfo) => ({
+            ...prevInfo,
+            filesWatched: isWatched
+              ? prevInfo.filesWatched + 1
+              : prevInfo.filesWatched - 1,
+          }));
+        }
+        // Actualizar el progreso local
+        updateVideoProgressLocally(path, {
+          currentTime: isWatched ? 1 : 0,
+          duration: 1,
+        });
+      }
+    },
+    [selectedCourse, updateVideoProgressLocally]
+  );
 
   const handleVideoTimeUpdate = useCallback(
     (e) => {
@@ -292,12 +304,16 @@ const App = () => {
               ? FileVideo
               : value.type === "html"
               ? FileText
+              : value.type === "pdf"
+              ? FilePdf
               : File;
           let iconColor =
             value.type === "video"
               ? "text-red-500"
               : value.type === "html"
               ? "text-green-500"
+              : value.type === "pdf"
+              ? "text-blue-500"
               : "text-gray-500";
           const completePath = `${selectedCourse}/${value.path}`;
           const filePath = `http://localhost:3001/api/file/${encodeURIComponent(
@@ -313,36 +329,36 @@ const App = () => {
 
           return (
             <div key={currentPath} className="flex flex-col">
-              <div
-                className="flex items-center cursor-pointer p-2 hover:bg-gray-100"
-                onClick={() => {
-                  selectContent(value.type, value.path);
-                }}
-              >
-                <FileIcon size={16} className={`mr-2 ${iconColor}`} />
-                {value.type === "video" && (
-                  <input
-                    type="checkbox"
-                    checked={isWatched}
-                    onChange={(e) =>
-                      handleWatchedChange(filePath, e.target.checked)
-                    }
-                    className="ml-2 mr-2"
-                    onClick={(e) => e.stopPropagation()}
-                  />
-                )}
-                <span>{key}</span>
-              </div>
-              {value.type === "video" && (
-                <div className="ml-6 mr-4 bg-gray-200 rounded-full h-2 mb-2">
-                  <div
-                    className={`h-2 rounded-full ${
-                      isWatched ? "bg-green-500" : "bg-blue-600"
-                    }`}
-                    style={{ width: `${progressPercentage}%` }}
-                  ></div>
+              <div className="hover:bg-gray-100">
+                <div
+                  className="cursor-pointer p-2 "
+                  onClick={() => {
+                    selectContent(value.type, value.path);
+                  }}
+                >
+                  <div className="flex items-center mb-2">
+                    <FileIcon size={16} className={`mr-2 ${iconColor}`} />
+                    <input
+                      type="checkbox"
+                      checked={isWatched}
+                      onChange={(e) =>
+                        handleWatchedChange(filePath, e.target.checked)
+                      }
+                      className="ml-2 mr-2"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <span>{key}</span>
+                  </div>
+                  <div className="ml-6 mr-4 bg-gray-200 rounded-full h-2 mb-2">
+                    <div
+                      className={`h-2 rounded-full ${
+                        isWatched ? "bg-green-500" : "bg-blue-600"
+                      }`}
+                      style={{ width: `${progressPercentage}%` }}
+                    ></div>
+                  </div>
                 </div>
-              )}
+              </div>
             </div>
           );
         }
@@ -355,25 +371,29 @@ const App = () => {
         <Home onCourseSelect={handleCourseSelect} />
       ) : (
         <div className="flex flex-grow overflow-hidden">
-          <div className="w-1/4 bg-white border-r shadow-md overflow-y-auto">
-            <div className="flex items-center justify-between p-4 border-b">
-              <h2 className="text-xl font-bold text-gray-800">CursoVisor</h2>
-              <button
-                onClick={goToHome}
-                className="text-blue-500 hover:text-blue-700"
-              >
-                <HomeIcon size={24} />
-              </button>
+          <div className="w-1/4 bg-white border-r shadow-md flex flex-col">
+            <div className="sticky top-0 z-10 bg-white border-b">
+              <div className="flex items-center justify-between p-4">
+                <h2 className="text-xl font-bold text-gray-800">CursoVisor</h2>
+                <button
+                  onClick={goToHome}
+                  className="text-blue-500 hover:text-blue-700"
+                >
+                  <HomeIcon size={24} />
+                </button>
+              </div>
             </div>
-            {structure ? (
-              renderTree(structure)
-            ) : (
-              <p>Cargando estructura de carpetas...</p>
-            )}
+            <div className="overflow-y-auto flex-grow">
+              {structure ? (
+                renderTree(structure)
+              ) : (
+                <p>Cargando estructura de carpetas...</p>
+              )}
+            </div>
           </div>
 
           <div className="w-full p-4">
-            <div className="w-full h-screen">
+            <div className="w-full h-screen mb-2">
               {courseInfo && (
                 <div className="mb-4 flex items-center">
                   {courseInfo.icon && SiIcons[courseInfo.icon] ? (
@@ -414,11 +434,23 @@ const App = () => {
                     }}
                   />
                 ) : selectedContent.type === "html" ? (
-                  <div className="flex justify-center items-center h-full">
+                  <div className="flex justify-center items-center">
                     <iframe
                       title="Contenido HTML"
                       src={selectedContent.path}
-                      className="w-full max-w-[75ch] min-h-screen border-spacing-10 rounded-lg shadow-2xl p-2"
+                      className="w-full max-w-[75ch] h-[90vh] border-spacing-10 rounded-lg shadow-2xl p-2"
+                    />
+                  </div>
+                ) : selectedContent.type === "pdf" ? (
+                  <div className="flex justify-center w-full h-[90vh] items-center mb-2">
+                    <PDFViewer
+                      pdfUrl={`${selectedContent.path}`}
+                      onProgressChange={(currentPage, totalPages) => {
+                        updateVideoProgressLocally(selectedContent.path, {
+                          currentTime: currentPage,
+                          duration: totalPages,
+                        });
+                      }}
                     />
                   </div>
                 ) : (
