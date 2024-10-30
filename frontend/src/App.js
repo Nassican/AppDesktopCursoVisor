@@ -365,6 +365,30 @@ const App = () => {
       });
   };
 
+  const getFileName = (path) => {
+    if (!path) return "";
+    try {
+      const decodedPath = decodeURIComponent(path);
+      const filePath = decodedPath.split('/api/file/')[1];
+      const fileName = filePath.split('/').pop();
+      
+      // Decodificar y limpiar el nombre del archivo
+      const cleanFileName = decodeURIComponent(fileName)
+        .replace(/%20/g, ' ')
+        .replace(/%5C/g, '/')
+        .replace(/%25/g, '%')
+        .replace(/\\/g, '/')
+        .split('/')
+        .pop();
+
+      // Eliminar la extensión del archivo
+      return cleanFileName.replace(/\.[^/.]+$/, '');
+    } catch (error) {
+      console.error('Error decodificando el nombre del archivo:', error);
+      return path;
+    }
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       {!selectedCourse ? (
@@ -412,52 +436,57 @@ const App = () => {
                 </div>
               )}
               {selectedContent ? (
-                selectedContent.type === "video" ? (
-                  <video
-                    src={selectedContent.path}
-                    controls
-                    className="w-full rounded-lg shadow-2xl"
-                    onTimeUpdate={handleVideoTimeUpdate}
-                    onPause={handleVideoPause}
-                    onPlay={handleVideoPlay}
-                    key={selectedContent.path}
-                    onLoadedMetadata={(e) => {
-                      const video = e.target;
-                      const savedProgress = videoProgress[selectedContent.path];
-                      if (
-                        savedProgress &&
-                        savedProgress.currentTime &&
-                        isFinite(savedProgress.currentTime)
-                      ) {
-                        video.currentTime = savedProgress.currentTime;
-                      }
-                    }}
-                  />
-                ) : selectedContent.type === "html" ? (
-                  <div className="flex justify-center items-center">
-                    <iframe
-                      title="Contenido HTML"
+                <div className="flex flex-col w-full">
+                  <h2 className="text-lg font-semibold mb-2 text-gray-500 mr-4">
+                    {getFileName(selectedContent.path)}
+                  </h2>
+                  {selectedContent.type === "video" ? (
+                    <video
                       src={selectedContent.path}
-                      className="w-full max-w-[75ch] h-[90vh] border-spacing-10 rounded-lg shadow-2xl p-2"
-                    />
-                  </div>
-                ) : selectedContent.type === "pdf" ? (
-                  <div className="flex justify-center w-full h-[90vh] items-center mb-2">
-                    <PDFViewer
-                      pdfUrl={`${selectedContent.path}`}
-                      onProgressChange={(currentPage, totalPages) => {
-                        updateVideoProgressLocally(selectedContent.path, {
-                          currentTime: currentPage,
-                          duration: totalPages,
-                        });
+                      controls
+                      className="w-full rounded-lg shadow-2xl "
+                      onTimeUpdate={handleVideoTimeUpdate}
+                      onPause={handleVideoPause}
+                      onPlay={handleVideoPlay}
+                      key={selectedContent.path}
+                      onLoadedMetadata={(e) => {
+                        const video = e.target;
+                        const savedProgress = videoProgress[selectedContent.path];
+                        if (
+                          savedProgress &&
+                          savedProgress.currentTime &&
+                          isFinite(savedProgress.currentTime)
+                        ) {
+                          video.currentTime = savedProgress.currentTime;
+                        }
                       }}
                     />
-                  </div>
-                ) : (
-                  <p className="text-gray-600">
-                    Este tipo de archivo no se puede previsualizar.
-                  </p>
-                )
+                  ) : selectedContent.type === "html" ? (
+                    <div className="flex justify-center items-center">
+                      <iframe
+                        title="Contenido HTML"
+                        src={selectedContent.path}
+                        className="w-full max-w-[75ch] h-[90vh] border-spacing-10 rounded-lg shadow-2xl p-2"
+                      />
+                    </div>
+                  ) : selectedContent.type === "pdf" ? (
+                    <div className="flex justify-center w-full h-[90vh] items-center mb-2">
+                      <PDFViewer
+                        pdfUrl={`${selectedContent.path}`}
+                        onProgressChange={(currentPage, totalPages) => {
+                          updateVideoProgressLocally(selectedContent.path, {
+                            currentTime: currentPage,
+                            duration: totalPages,
+                          });
+                        }}
+                      />
+                    </div>
+                  ) : (
+                    <p className="text-gray-600">
+                      Este tipo de archivo no se puede previsualizar.
+                    </p>
+                  )}
+                </div>
               ) : (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">

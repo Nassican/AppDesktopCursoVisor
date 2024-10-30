@@ -9,6 +9,7 @@ const Home = ({ onCourseSelect }) => {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isIconSelectorOpen, setIsIconSelectorOpen] = useState(false);
   const [isLoadingModalOpen, setIsLoadingModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     fetchCourses();
@@ -42,12 +43,42 @@ const Home = ({ onCourseSelect }) => {
     }
   };
 
+  // Filtrar cursos basado en el término de búsqueda
+  const filteredCourses = courses.filter((course) =>
+    course.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="p-8 bg-gray-100">
       <div className="max-w-screen-xl mx-auto">
-        <h1 className="text-3xl font-bold mb-6">Cursos disponibles</h1>
+        <div className="flex flex-col mb-6">
+          <h1 className="text-3xl font-bold mb-4">Cursos disponibles</h1>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="Buscar cursos..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            />
+            <svg
+              className="absolute left-3 top-3.5 h-5 w-5 text-gray-400"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+              />
+            </svg>
+          </div>
+        </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {courses.map((course) => {
+          {filteredCourses.map((course) => {
             const IconComponent =
               course.icon && SiIcons[course.icon]
                 ? SiIcons[course.icon]
