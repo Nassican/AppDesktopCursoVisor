@@ -2,6 +2,7 @@ const express = require("express");
 const fs = require("fs").promises;
 const path = require("path");
 const cors = require("cors");
+const chokidar = require('fs').watch;
 
 const app = express();
 app.use(cors());
@@ -34,28 +35,12 @@ async function initializeCoursesData() {
 
     for (const course of courses.filter((dirent) => dirent.isDirectory())) {
       const courseId = course.name;
-      const structure = await getDirectoryStructure(
-        path.join(coursesDir, courseId)
-      );
-      const totalFiles = countFiles(structure);
-
-      coursesData[courseId] = {
-        id: courseId,
-        name: courseId.replace(/_/g, " "),
-        description: `Descripción del curso ${courseId}`,
-        totalFiles,
-        filesWatched: 0,
-        icon: "SiFolder",
-        files: {},
-        progress: {},
-      };
+      await updateCourseData(courseId);
     }
-
-    await writeCoursesDataFile(coursesData);
-    console.log(
-      "Estructura de cursos inicializada y guardada en courses_data.json"
-    );
   }
+  
+  // Iniciar el observador de directorios
+  watchCoursesDirectory();
 }
 
 function encodePathComponent(component) {
@@ -268,12 +253,23 @@ app.get("/api/courses", async (req, res) => {
     const courses = await fs.readdir(coursesDir, { withFileTypes: true });
     const coursesData = await readCoursesDataFile();
 
+    // Verificar si hay nuevos cursos que no estén en coursesData
+    for (const course of courses.filter((dirent) => dirent.isDirectory())) {
+      const courseId = course.name;
+      if (!coursesData[courseId]) {
+        await updateCourseData(courseId);
+      }
+    }
+
+    // Releer los datos actualizados
+    const updatedCoursesData = await readCoursesDataFile();
+    
     const courseList = await Promise.all(
       courses
         .filter((dirent) => dirent.isDirectory())
         .map(async (dirent) => {
           const courseId = dirent.name;
-          const courseData = coursesData[courseId] || {};
+          const courseData = updatedCoursesData[courseId] || {};
           const structure = await getDirectoryStructure(
             path.join(coursesDir, courseId)
           );
@@ -285,7 +281,7 @@ app.get("/api/courses", async (req, res) => {
             description: `Descripción del curso ${courseId}`,
             totalFiles,
             filesWatched: courseData.filesWatched || 0,
-            icon: courseData.icon || "Folder", // Añadimos esta línea
+            icon: courseData.icon || "SiFolder",
           };
         })
     );
@@ -347,6 +343,44 @@ function countWatchedFiles(courseData) {
   }
 
   return watchedFiles.size;
+}
+
+function watchCoursesDirectory() {
+  const watcher = chokidar(DEFAULT_FOLDER, { recursive: false });
+  
+  watcher.on('addDir', async (dirPath) => {
+    if (dirPath !== DEFAULT_FOLDER) {
+      console.log('Nueva carpeta detectada:', dirPath);
+      const courseId = path.basename(dirPath);
+      await updateCourseData(courseId);
+    }
+  });
+}
+
+async function updateCourseData(courseId) {
+  try {
+    const coursesData = await readCoursesDataFile();
+    const structure = await getDirectoryStructure(
+      path.join(DEFAULT_FOLDER, courseId)
+    );
+    const totalFiles = countFiles(structure);
+
+    coursesData[courseId] = {
+      id: courseId,
+      name: courseId.replace(/_/g, " "),
+      description: `Descripción del curso ${courseId}`,
+      totalFiles,
+      filesWatched: 0,
+      icon: "SiFolder",
+      files: {},
+      progress: {},
+    };
+
+    await writeCoursesDataFile(coursesData);
+    console.log(`Curso ${courseId} agregado y actualizado en courses_data.json`);
+  } catch (error) {
+    console.error(`Error actualizando el curso ${courseId}:`, error);
+  }
 }
 
 initializeCoursesData()
