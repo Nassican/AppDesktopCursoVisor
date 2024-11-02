@@ -181,7 +181,7 @@ const App = () => {
   );
 
   const updateVideoProgressLocally = useCallback((path, newProgress) => {
-    console.log("Updating video progress locally:", path, newProgress);
+    //console.log("Updating video progress locally:", path, newProgress);
     setVideoProgress((prev) => ({
       ...prev,
       [path]: newProgress,
@@ -300,10 +300,10 @@ const App = () => {
 
         // Obtener las partes de la ruta
         const pathParts = decodedPath.split("/");
-        console.log("Decoded pathParts:", pathParts);
+        //console.log("Decoded pathParts:", pathParts);
         if (pathParts.length > 1) {
           const parentFolder = pathParts.slice(0, -1).join("/");
-          console.log("parentFolder", parentFolder);
+          //console.log("parentFolder", parentFolder);
           setExpandedFolders({ [parentFolder]: true });
         }
 
@@ -323,10 +323,43 @@ const App = () => {
   };
 
   const goToHome = () => {
-    setSelectedCourse(null);
-    setStructure(null);
-    setSelectedContent(null);
-    setFolderPath("");
+    // Si hay un video seleccionado, guardamos su progreso
+    if (selectedContent?.type === "video") {
+      const lastProgress = lastProgressUpdateRef.current[selectedContent.path];
+      if (lastProgress) {
+        updateVideoProgressToBackend(selectedContent.path, lastProgress)
+          .then(() => {
+            // Limpiar estados después de guardar el progreso
+            setSelectedCourse(null);
+            setStructure(null);
+            setSelectedContent(null);
+            setFolderPath("");
+          })
+          .catch((error) => {
+            console.error(
+              "Error saving video progress before going home:",
+              error
+            );
+            // Limpiar estados incluso si hay error
+            setSelectedCourse(null);
+            setStructure(null);
+            setSelectedContent(null);
+            setFolderPath("");
+          });
+      } else {
+        // Si no hay progreso que guardar, solo limpiamos los estados
+        setSelectedCourse(null);
+        setStructure(null);
+        setSelectedContent(null);
+        setFolderPath("");
+      }
+    } else {
+      // Si no hay video seleccionado, simplemente limpiamos los estados
+      setSelectedCourse(null);
+      setStructure(null);
+      setSelectedContent(null);
+      setFolderPath("");
+    }
   };
 
   const calculateFolderProgress = useCallback(
