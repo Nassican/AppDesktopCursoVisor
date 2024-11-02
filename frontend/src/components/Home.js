@@ -52,7 +52,7 @@ const Home = ({ onCourseSelect }) => {
     <div className="p-8 bg-gray-100">
       <div className="max-w-screen-xl mx-auto">
         <div className="flex flex-col mb-6">
-          <h1 className="text-3xl font-bold mb-4">Cursos disponibles</h1>
+          <h1 className="text-3xl font-bold mb-6">Cursos disponibles</h1>
           <div className="relative">
             <input
               type="text"

@@ -167,7 +167,6 @@ const App = () => {
         );
         if (updatedHistory) {
           setVideoHistory(updatedHistory);
-          // Actualizar el conteo local de archivos vistos
           setCourseInfo((prevInfo) => ({
             ...prevInfo,
             filesWatched: isWatched
@@ -175,14 +174,16 @@ const App = () => {
               : prevInfo.filesWatched - 1,
           }));
         }
-        // Actualizar el progreso local
-        updateVideoProgressLocally(path, {
-          currentTime: isWatched ? 1 : 0,
+
+        // No modificamos el progreso del video, solo mantenemos el estado actual
+        const currentProgress = videoProgress[path] || {
+          currentTime: 0,
           duration: 1,
-        });
+        };
+        updateVideoProgressLocally(path, currentProgress);
       }
     },
-    [selectedCourse, updateVideoProgressLocally]
+    [selectedCourse, updateVideoProgressLocally, videoProgress]
   );
 
   const handleVideoTimeUpdate = useCallback(
