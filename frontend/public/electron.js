@@ -14,6 +14,7 @@ function createWindow() {
       nodeIntegration: true,
       contextIsolation: false,
       webSecurity: false,
+      // Desactivar la barra de herramientas de Electron
     },
     icon: path.join(__dirname, "../public/catppuccin--video.ico"),
     title: "CursoVisor",
@@ -27,6 +28,7 @@ function createWindow() {
     mainWindow.webContents.openDevTools();
   } else {
     // En producción, carga desde los archivos construidos
+    mainWindow.removeMenu();
     mainWindow.loadFile(path.join(__dirname, "../build/index.html"));
   }
 
