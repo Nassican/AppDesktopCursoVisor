@@ -21,7 +21,7 @@ const App = () => {
   const [structure, setStructure] = useState(null);
   const [selectedContent, setSelectedContent] = useState(null);
   const [expandedFolders, setExpandedFolders] = useState({});
-  const [folderPath, setFolderPath] = useState("");
+  const [, setFolderPath] = useState("");
   const [videoProgress, setVideoProgress] = useState({});
   const [videoHistory, setVideoHistory] = useState({});
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -78,21 +78,36 @@ const App = () => {
 
   const fetchFolderStructure = async () => {
     try {
+      if (!selectedCourse) return null;
+
       const response = await axios.post(
         "http://localhost:3001/api/folder-structure",
-        { folderPath }
+        {
+          folderPath: `/${selectedCourse}`,
+          courseId: selectedCourse,
+        }
       );
       setStructure(response.data);
+      return response.data;
     } catch (error) {
       console.error("Error fetching folder structure:", error);
+      return null;
     }
   };
 
   const toggleFolder = (path) => {
-    setExpandedFolders((prev) => ({
-      ...prev,
-      [path]: !prev[path],
-    }));
+    console.log("Toggling folder:", path);
+
+    setExpandedFolders((prev) => {
+      // Si el folder ya está abierto, lo cerramos (objeto vacío)
+      if (prev[path]) {
+        return {};
+      }
+      // Si está cerrado, solo mantenemos este folder abierto
+      return {
+        [path]: true,
+      };
+    });
   };
 
   const updateVideoProgressToBackend = useCallback(
@@ -122,7 +137,14 @@ const App = () => {
 
   const selectContent = useCallback(
     (type, filePath) => {
-      const completePath = `${selectedCourse}/${filePath}`;
+      if (!selectedCourse || !filePath) return;
+
+      // Asegurarnos de que la ruta del video esté correctamente formada
+      const normalizedPath = filePath.startsWith("/")
+        ? filePath.slice(1)
+        : filePath;
+      const completePath = `${selectedCourse}/${normalizedPath}`;
+
       setSelectedContent({
         type,
         path: `http://localhost:3001/api/file/${encodeURIComponent(
@@ -135,18 +157,29 @@ const App = () => {
       }
 
       if (type === "video") {
-        console.log("Setting up progress update timer for:", completePath);
+        const videoName = normalizedPath
+          .split("/")
+          .pop()
+          .replace(/\.[^/.]+$/, "");
+
+        axios.post("http://localhost:3001/api/last-watched", {
+          courseId: selectedCourse,
+          videoPath: normalizedPath,
+          videoName: videoName,
+          expandedFolders: expandedFolders,
+        });
+
         progressUpdateTimerRef.current = setInterval(() => {
           const lastProgress = lastProgressUpdateRef.current[completePath];
-          console.log("Timer fired. Last progress:", lastProgress);
           if (lastProgress) {
             updateVideoProgressToBackend(completePath, lastProgress);
           }
         }, PROGRESS_UPDATE_INTERVAL);
       }
     },
-    [selectedCourse, updateVideoProgressToBackend]
+    [selectedCourse, updateVideoProgressToBackend, expandedFolders]
   );
+
   const updateVideoProgressLocally = useCallback((path, newProgress) => {
     console.log("Updating video progress locally:", path, newProgress);
     setVideoProgress((prev) => ({
@@ -249,12 +282,44 @@ const App = () => {
     }
   };
 
-  const handleCourseSelect = (courseId) => {
+  const handleCourseSelect = (courseId, initialVideoPath = null) => {
+    if (!courseId) return;
+
     setSelectedCourse(courseId);
-    // Establece el folderPath con el nombre del curso
-    setFolderPath(`/${courseId}`);
+    const folderPath = `/${courseId}`;
+    setFolderPath(folderPath);
     setStructure(null);
-    setSelectedContent(null);
+
+    if (initialVideoPath) {
+      // Primero cargamos la estructura
+      fetchFolderStructure().then(() => {
+        // Solo expandimos el folder padre del video
+        const decodedPath = decodeURIComponent(initialVideoPath)
+          .replace(/%5C/g, "/") // Reemplazar \\ por /
+          .replace(/\\/g, "/"); // Reemplazar \ por /
+
+        // Obtener las partes de la ruta
+        const pathParts = decodedPath.split("/");
+        console.log("Decoded pathParts:", pathParts);
+        if (pathParts.length > 1) {
+          const parentFolder = pathParts.slice(0, -1).join("/");
+          console.log("parentFolder", parentFolder);
+          setExpandedFolders({ [parentFolder]: true });
+        }
+
+        // Seleccionamos el contenido directamente
+        setSelectedContent({
+          type: "video",
+          path: `http://localhost:3001/api/file/${encodeURIComponent(
+            `${courseId}/${initialVideoPath}`
+          )}`,
+        });
+      });
+    } else {
+      setExpandedFolders({});
+      setSelectedContent(null);
+      fetchFolderStructure();
+    }
   };
 
   const goToHome = () => {

@@ -2,7 +2,7 @@ const express = require("express");
 const fs = require("fs").promises;
 const path = require("path");
 const cors = require("cors");
-const chokidar = require('fs').watch;
+const chokidar = require("fs").watch;
 
 const app = express();
 app.use(cors());
@@ -38,7 +38,7 @@ async function initializeCoursesData() {
       await updateCourseData(courseId);
     }
   }
-  
+
   // Iniciar el observador de directorios
   watchCoursesDirectory();
 }
@@ -263,7 +263,7 @@ app.get("/api/courses", async (req, res) => {
 
     // Releer los datos actualizados
     const updatedCoursesData = await readCoursesDataFile();
-    
+
     const courseList = await Promise.all(
       courses
         .filter((dirent) => dirent.isDirectory())
@@ -308,6 +308,46 @@ app.get("/api/courses/:courseId", async (req, res) => {
   }
 });
 
+// Agregar después de los otros endpoints
+app.post("/api/last-watched", async (req, res) => {
+  try {
+    const { courseId, videoPath, videoName, expandedFolders } = req.body;
+    console.log("Received last watched data:", {
+      courseId,
+      videoPath,
+      videoName,
+      expandedFolders,
+    });
+
+    let coursesData = await readCoursesDataFile();
+
+    // Guardar información del último video visto y carpetas expandidas
+    coursesData.lastWatched = {
+      courseId,
+      videoPath,
+      videoName,
+      expandedFolders: expandedFolders || {}, // Asegurarnos de que siempre haya un objeto
+      timestamp: new Date().toISOString(),
+    };
+
+    await writeCoursesDataFile(coursesData);
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error saving last watched:", error);
+    res.status(500).json({ error: "Error saving last watched data" });
+  }
+});
+
+app.get("/api/last-watched", async (req, res) => {
+  try {
+    const coursesData = await readCoursesDataFile();
+    res.json(coursesData.lastWatched || null);
+  } catch (error) {
+    console.error("Error getting last watched:", error);
+    res.status(500).json({ error: "Error getting last watched data" });
+  }
+});
+
 function countFiles(structure) {
   let count = 0;
   for (const key in structure) {
@@ -347,10 +387,10 @@ function countWatchedFiles(courseData) {
 
 function watchCoursesDirectory() {
   const watcher = chokidar(DEFAULT_FOLDER, { recursive: false });
-  
-  watcher.on('addDir', async (dirPath) => {
+
+  watcher.on("addDir", async (dirPath) => {
     if (dirPath !== DEFAULT_FOLDER) {
-      console.log('Nueva carpeta detectada:', dirPath);
+      console.log("Nueva carpeta detectada:", dirPath);
       const courseId = path.basename(dirPath);
       await updateCourseData(courseId);
     }
@@ -377,7 +417,9 @@ async function updateCourseData(courseId) {
     };
 
     await writeCoursesDataFile(coursesData);
-    console.log(`Curso ${courseId} agregado y actualizado en courses_data.json`);
+    console.log(
+      `Curso ${courseId} agregado y actualizado en courses_data.json`
+    );
   } catch (error) {
     console.error(`Error actualizando el curso ${courseId}:`, error);
   }
