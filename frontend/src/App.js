@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import {
   Folder,
   ChevronRight,
@@ -8,12 +8,18 @@ import {
   File,
   FileTextIcon as FilePdf,
   Home as HomeIcon,
+  Image,
+  Archive,
+  Link,
+  Download,
 } from "lucide-react";
 import axios from "axios";
 import { fileHistoryService } from "./components/fileHistoryService";
 import Home from "./components/Home";
 import * as SiIcons from "react-icons/si";
-import PDFViewer from "./components/PDFViewer";
+import URLViewer from "./components/URLViewer";
+import TextViewer from "./components/TextViewer";
+import HTMLViewer from "./components/HTMLViewer";
 
 const PROGRESS_UPDATE_INTERVAL = 10000; // 10 seconds
 
@@ -362,6 +368,7 @@ const App = () => {
     }
   };
 
+  // 1. Modificar calculateFolderProgress para incluir HTML
   const calculateFolderProgress = useCallback(
     (node) => {
       let totalFiles = 0;
@@ -371,7 +378,10 @@ const App = () => {
         Object.entries(node).forEach(([, value]) => {
           if (typeof value === "object" && !value.type) {
             countFiles(value);
-          } else {
+          } else if (
+            value.type &&
+            ["video", "pdf", "epub", "html"].includes(value.type)
+          ) {
             totalFiles++;
             const completePath = `http://localhost:3001/api/file/${encodeURIComponent(
               `${selectedCourse}/${value.path}`
@@ -444,23 +454,10 @@ const App = () => {
             </div>
           );
         } else {
-          let FileIcon =
-            value.type === "video"
-              ? FileVideo
-              : value.type === "html"
-              ? FileText
-              : value.type === "pdf"
-              ? FilePdf
-              : File;
+          // Obtener el tipo e icono usando las funciones existentes
+          const type = getFileType(key);
+          const icon = getFileIcon(type);
 
-          let iconColor =
-            value.type === "video"
-              ? "text-red-500"
-              : value.type === "html"
-              ? "text-green-500"
-              : value.type === "pdf"
-              ? "text-blue-500"
-              : "text-gray-500";
           const completePath = `${selectedCourse}/${value.path}`;
           const filePath = `http://localhost:3001/api/file/${encodeURIComponent(
             completePath
@@ -483,7 +480,10 @@ const App = () => {
                   }}
                 >
                   <div className="flex items-center mb-2">
-                    <FileIcon size={16} className={`mr-2 ${iconColor}`} />
+                    {React.cloneElement(icon, {
+                      size: 16,
+                      className: `mr-2 ${icon.props.className}`,
+                    })}
                     <input
                       type="checkbox"
                       checked={isWatched}
@@ -535,6 +535,60 @@ const App = () => {
     }
   };
 
+  const getFileType = (filePath) => {
+    const extension = filePath.toLowerCase().split(".").pop();
+
+    const fileTypes = {
+      // Videos
+      mp4: "video",
+      webm: "video",
+      mkv: "video",
+
+      // Imágenes
+      jpg: "image",
+      jpeg: "image",
+      png: "image",
+      gif: "image",
+      webp: "image",
+
+      // Documentos
+      pdf: "pdf",
+      html: "html",
+      txt: "text",
+      md: "text",
+      epub: "epub",
+
+      // Archivos comprimidos
+      zip: "zip",
+      rar: "zip",
+      "7z": "zip",
+
+      // Enlaces
+      url: "url",
+
+      // Otros
+      default: "unknown",
+    };
+
+    return fileTypes[extension] || fileTypes.default;
+  };
+
+  const getFileIcon = (type) => {
+    const iconMap = {
+      video: <FileVideo size={16} className="text-red-500" />,
+      image: <Image size={16} className="text-green-500" />,
+      pdf: <FilePdf size={16} className="text-blue-500" />,
+      html: <FileText size={16} className="text-green-500" />,
+      text: <FileText size={16} className="text-gray-500" />,
+      epub: <FileText size={16} className="text-purple-500" />, // Agregar esta línea
+      zip: <Archive size={16} className="text-purple-500" />,
+      url: <Link size={16} className="text-blue-400" />,
+      unknown: <File size={16} className="text-gray-400" />,
+    };
+
+    return iconMap[type] || iconMap.unknown;
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       {!selectedCourse ? (
@@ -562,103 +616,229 @@ const App = () => {
             </div>
           </div>
 
-          <div className="w-full p-4">
-            <div className="w-full h-screen mb-2">
-              {courseInfo && (
-                <div className="mb-4 flex items-center">
-                  {courseInfo.icon && SiIcons[courseInfo.icon] ? (
-                    SiIcons[courseInfo.icon]({
-                      size: 24,
-                      className: "text-gray-500 mr-4",
-                    })
-                  ) : (
-                    <Folder size={24} className="text-gray-500 mr-4" />
-                  )}
-                  <div>
-                    <h3 className="text-lg font-medium text-gray-500">
-                      {courseInfo.name}
-                    </h3>
-                  </div>
+          <div className="w-full p-4 flex flex-col h-[calc(100vh)]">
+            {courseInfo && (
+              <div className="flex-shrink-0 mb-4 flex items-center">
+                {courseInfo.icon && SiIcons[courseInfo.icon] ? (
+                  SiIcons[courseInfo.icon]({
+                    size: 24,
+                    className: "text-gray-500 mr-4",
+                  })
+                ) : (
+                  <Folder size={24} className="text-gray-500 mr-4" />
+                )}
+                <div>
+                  <h3 className="text-lg font-medium text-gray-500">
+                    {courseInfo.name}
+                  </h3>
                 </div>
-              )}
-              {selectedContent ? (
-                <div className="flex flex-col w-full">
-                  <h2 className="text-lg font-semibold mb-2 text-gray-500 mr-4">
-                    {getFileName(selectedContent.path)}
-                  </h2>
-                  {selectedContent.type === "video" ? (
-                    <video
-                      src={selectedContent.path}
-                      controls
-                      className="w-full rounded-lg shadow-2xl "
-                      onTimeUpdate={handleVideoTimeUpdate}
-                      onPause={handleVideoPause}
-                      onPlay={handleVideoPlay}
-                      key={selectedContent.path}
-                      onLoadedMetadata={(e) => {
-                        const video = e.target;
-                        const savedProgress =
-                          videoProgress[selectedContent.path];
-                        if (
-                          savedProgress &&
-                          savedProgress.currentTime &&
-                          isFinite(savedProgress.currentTime)
-                        ) {
-                          video.currentTime = savedProgress.currentTime;
-                        }
-                      }}
-                    />
-                  ) : selectedContent.type === "html" ? (
-                    <div className="flex justify-center items-center">
-                      <iframe
-                        title="Contenido HTML"
-                        src={selectedContent.path}
-                        className="w-full max-w-[75ch] h-[90vh] border-spacing-10 rounded-lg shadow-2xl p-2"
-                      />
+              </div>
+            )}
+            {selectedContent ? (
+              <div className="flex flex-col flex-1 min-h-0">
+                <h2 className="text-lg font-semibold mb-2 text-gray-500">
+                  {getFileName(selectedContent.path)}
+                </h2>
+
+                {(() => {
+                  switch (selectedContent.type) {
+                    case "video":
+                      return (
+                        <div className="relative flex-1 bg-black rounded-lg overflow-hidden">
+                          <video
+                            src={selectedContent.path}
+                            controls
+                            className="h-full w-full object-contain"
+                            onTimeUpdate={handleVideoTimeUpdate}
+                            onPause={handleVideoPause}
+                            onPlay={handleVideoPlay}
+                            key={selectedContent.path}
+                            onLoadedMetadata={(e) => {
+                              const video = e.target;
+                              const savedProgress =
+                                videoProgress[selectedContent.path];
+                              if (
+                                savedProgress &&
+                                savedProgress.currentTime &&
+                                isFinite(savedProgress.currentTime)
+                              ) {
+                                video.currentTime = savedProgress.currentTime;
+                              }
+                            }}
+                          />
+                        </div>
+                      );
+
+                    case "image":
+                      return (
+                        <div className="relative flex-1 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
+                          <img
+                            src={selectedContent.path}
+                            alt={getFileName(selectedContent.path)}
+                            className="max-h-full max-w-full object-contain"
+                          />
+                        </div>
+                      );
+
+                    case "text":
+                      return (
+                        <div className="flex-1 bg-white rounded-lg shadow-inner p-4 overflow-auto">
+                          <pre className="whitespace-pre-wrap font-mono text-sm">
+                            <TextViewer filePath={selectedContent.path} />
+                          </pre>
+                        </div>
+                      );
+
+                    case "url":
+                      return (
+                        <div className="flex-1 flex items-center justify-center">
+                          <URLViewer filePath={selectedContent.path} />
+                        </div>
+                      );
+
+                    case "html":
+                      return (
+                        <div className="flex-1 bg-white rounded-lg overflow-hidden">
+                          <HTMLViewer filePath={selectedContent.path} />
+                        </div>
+                      );
+
+                    case "pdf":
+                      return (
+                        <div className="flex-1 bg-white rounded-lg overflow-hidden flex flex-col">
+                          <object
+                            data={selectedContent.path}
+                            type="application/pdf"
+                            className="w-full h-full"
+                          >
+                            <div className="flex-1 flex items-center justify-center p-8">
+                              <div className="text-center">
+                                <FilePdf
+                                  size={64}
+                                  className="mx-auto mb-4 text-blue-500"
+                                />
+                                <h3 className="text-lg font-medium mb-2">
+                                  No se puede mostrar el PDF
+                                </h3>
+                                <p className="text-gray-600 mb-4">
+                                  Tu navegador no puede mostrar PDFs integrados.
+                                </p>
+                                <a
+                                  href={selectedContent.path}
+                                  download
+                                  className="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 
+                       text-white rounded-lg transition-colors"
+                                >
+                                  <Download size={16} className="mr-2" />
+                                  Descargar PDF
+                                </a>
+                              </div>
+                            </div>
+                          </object>
+                        </div>
+                      );
+
+                    case "epub":
+                      return (
+                        <div className="flex-1 flex items-center justify-center p-8">
+                          <div className="text-center">
+                            <FileText
+                              size={64}
+                              className="mx-auto mb-4 text-blue-500"
+                            />
+                            <h3 className="text-lg font-medium mb-2">
+                              Archivo EPUB
+                            </h3>
+                            <p className="text-gray-600 mb-4">
+                              Este archivo debe ser descargado para su
+                              visualización
+                            </p>
+                            <div className="space-y-4">
+                              <a
+                                href={selectedContent.path}
+                                download
+                                className="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 
+                         text-white rounded-lg transition-colors"
+                              >
+                                <Download size={16} className="mr-2" />
+                                Descargar EPUB
+                              </a>
+                              <div className="text-sm text-gray-500 mt-4">
+                                <p>Recomendamos usar:</p>
+                                <ul className="mt-2">
+                                  <li>• Calibre (Windows/Mac/Linux)</li>
+                                  <li>• Apple Books (iOS/Mac)</li>
+                                  <li>• Google Play Libros (Android)</li>
+                                </ul>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+
+                    case "zip":
+                      return (
+                        <div className="flex-1 flex items-center justify-center p-8">
+                          <div className="text-center">
+                            <Archive
+                              size={64}
+                              className="mx-auto mb-4 text-purple-500"
+                            />
+                            <h3 className="text-lg font-medium mb-2">
+                              Archivo Comprimido
+                            </h3>
+                            <p className="text-gray-600 mb-4">
+                              Este archivo debe ser descargado para su
+                              visualización
+                            </p>
+                            <a
+                              href={selectedContent.path}
+                              download
+                              className="inline-flex items-center px-4 py-2 bg-purple-500 hover:bg-purple-600 
+                           text-white rounded-lg transition-colors"
+                            >
+                              <Download size={16} className="mr-2" />
+                              Descargar
+                            </a>
+                          </div>
+                        </div>
+                      );
+
+                    default:
+                      return (
+                        <div className="flex-1 flex items-center justify-center">
+                          <p className="text-gray-500">
+                            No se puede previsualizar este tipo de archivo
+                          </p>
+                        </div>
+                      );
+                  }
+                })()}
+              </div>
+            ) : (
+              <div className="flex items-center justify-center h-full">
+                <div className="text-center">
+                  {courseInfo && (
+                    <div className="mb-8 flex flex-col items-center">
+                      {courseInfo.icon && SiIcons[courseInfo.icon] ? (
+                        SiIcons[courseInfo.icon]({
+                          size: 256,
+                          className: "text-blue-500 mb-4",
+                        })
+                      ) : (
+                        <Folder size={256} className="text-blue-500 mb-4" />
+                      )}
+                      <h3 className="text-2xl font-bold mb-2">
+                        {courseInfo.name}
+                      </h3>
+                      <p className="text-lg text-gray-600 mb-4">
+                        Selecciona un archivo para visualizarlo.
+                      </p>
                     </div>
-                  ) : selectedContent.type === "pdf" ? (
-                    <div className="flex justify-center w-full h-[90vh] items-center mb-2">
-                      <PDFViewer
-                        pdfUrl={`${selectedContent.path}`}
-                        onProgressChange={(currentPage, totalPages) => {
-                          updateVideoProgressLocally(selectedContent.path, {
-                            currentTime: currentPage,
-                            duration: totalPages,
-                          });
-                        }}
-                      />
-                    </div>
-                  ) : (
-                    <p className="text-gray-600">
-                      Este tipo de archivo no se puede previsualizar.
-                    </p>
                   )}
                 </div>
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <div className="text-center">
-                    {courseInfo && (
-                      <div className="mb-8 flex flex-col items-center">
-                        {courseInfo.icon && SiIcons[courseInfo.icon] ? (
-                          SiIcons[courseInfo.icon]({
-                            size: 256,
-                            className: "text-blue-500 mb-4",
-                          })
-                        ) : (
-                          <Folder size={256} className="text-blue-500 mb-4" />
-                        )}
-                        <h3 className="text-2xl font-bold mb-2">
-                          {courseInfo.name}
-                        </h3>
-                        <p className="text-lg text-gray-600 mb-4">
-                          Selecciona un archivo para visualizarlo.
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
       )}

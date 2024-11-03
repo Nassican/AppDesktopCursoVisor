@@ -64,9 +64,35 @@ async function getDirectoryStructure(dir, baseDir = "") {
         );
       } else {
         const ext = path.extname(file.name).toLowerCase();
-        if (ext === ".mp4" || ext === ".html" || ext === ".pdf") {
+        // Mapa de extensiones a tipos
+        const fileTypes = {
+          // Videos
+          ".mp4": "video",
+          ".webm": "video",
+          ".mkv": "video",
+          // PDFs
+          ".pdf": "pdf",
+          // EPUBs
+          ".epub": "epub",
+          // Otros tipos (no contados para progreso)
+          ".jpg": "image",
+          ".jpeg": "image",
+          ".png": "image",
+          ".gif": "image",
+          ".webp": "image",
+          ".html": "html",
+          ".txt": "text",
+          ".md": "text",
+          ".zip": "zip",
+          ".rar": "zip",
+          ".7z": "zip",
+          ".url": "url",
+        };
+
+        const type = fileTypes[ext];
+        if (type) {
           structure[file.name] = {
-            type: ext === ".mp4" ? "video" : ext === ".html" ? "html" : "pdf",
+            type,
             path: encodedPath,
             watched: false,
           };
@@ -113,20 +139,50 @@ app.post("/api/folder-structure", async (req, res) => {
 app.get("/api/file/:encodedPath(*)", async (req, res) => {
   const filePath = decodeURIComponent(req.params.encodedPath);
   const fullPath = path.join(DEFAULT_FOLDER, filePath);
+  const ext = path.extname(fullPath).toLowerCase();
 
   try {
     await fs.access(fullPath);
-    const fileContent = await fs.readFile(fullPath);
 
-    if (path.extname(fullPath).toLowerCase() === ".pdf") {
-      res.contentType("application/pdf");
-      res.set(
-        "Content-Disposition",
-        `inline; filename="${path.basename(filePath)}"`
-      );
-      res.send(fileContent);
+    const mimeTypes = {
+      ".pdf": "application/pdf",
+      ".epub": "application/epub+zip",
+      ".html": "text/html", // Asegurarnos que HTML esté aquí
+      ".jpg": "image/jpeg",
+      ".jpeg": "image/jpeg",
+      ".png": "image/png",
+      ".gif": "image/gif",
+      ".webp": "image/webp",
+      ".txt": "text/plain",
+      ".md": "text/plain",
+      ".url": "text/plain",
+      ".zip": "application/zip",
+      ".rar": "application/x-rar-compressed",
+      ".7z": "application/x-7z-compressed",
+    };
+
+    const downloadExtensions = [".zip", ".rar", ".7z", ".epub"];
+
+    if (downloadExtensions.includes(ext)) {
+      res.download(fullPath);
     } else {
-      res.sendFile(fullPath);
+      const mimeType = mimeTypes[ext];
+      if (mimeType) {
+        res.contentType(mimeType);
+        if (ext === ".url") {
+          const content = await fs.readFile(fullPath, "utf-8");
+          res.send(content);
+        } else if (ext === ".html") {
+          // Manejo especial para HTML si es necesario
+          const content = await fs.readFile(fullPath, "utf-8");
+          res.send(content);
+        } else {
+          const fileContent = await fs.readFile(fullPath);
+          res.send(fileContent);
+        }
+      } else {
+        res.sendFile(fullPath);
+      }
     }
   } catch (error) {
     console.error("Error: File not found or inaccessible", fullPath, error);
@@ -350,9 +406,11 @@ app.get("/api/last-watched", async (req, res) => {
 
 function countFiles(structure) {
   let count = 0;
+  const validTypes = ["video", "pdf", "epub", "html"];
+
   for (const key in structure) {
     if (typeof structure[key] === "object" && structure[key].type) {
-      if (["video", "html", "pdf"].includes(structure[key].type)) {
+      if (validTypes.includes(structure[key].type)) {
         count++;
       }
     } else if (typeof structure[key] === "object" && !structure[key].type) {
