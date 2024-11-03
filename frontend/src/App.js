@@ -106,12 +106,15 @@ const App = () => {
     console.log("Toggling folder:", path);
 
     setExpandedFolders((prev) => {
-      // Si el folder ya está abierto, lo cerramos (objeto vacío)
+      // Si el folder ya está abierto, lo cerramos
       if (prev[path]) {
-        return {};
+        const newExpandedFolders = { ...prev };
+        delete newExpandedFolders[path];
+        return newExpandedFolders;
       }
-      // Si está cerrado, solo mantenemos este folder abierto
+      // Si está cerrado, lo abrimos manteniendo los demás estados
       return {
+        ...prev,
         [path]: true,
       };
     });
@@ -400,6 +403,16 @@ const App = () => {
     [selectedCourse, videoHistory]
   );
 
+  const MAX_FILENAME_LENGTH = 35; // Constante para el límite de caracteres
+
+  const truncateFileName = (fileName) => {
+    if (fileName.length <= MAX_FILENAME_LENGTH) return fileName;
+    const extension = fileName.split(".").pop();
+    const nameWithoutExt = fileName.slice(0, fileName.lastIndexOf("."));
+    const truncated = nameWithoutExt.slice(0, MAX_FILENAME_LENGTH - 3) + "...";
+    return `${truncated}.${extension}`;
+  };
+
   const renderTree = (node, path = "") => {
     return Object.entries(node)
       .sort(([a], [b]) => customSort(a, b))
@@ -497,7 +510,9 @@ const App = () => {
                     ) : (
                       <div className="ml-4"></div>
                     )}
-                    <span>{key}</span>
+                    <span className="truncate" title={key}>
+                      {truncateFileName(key)}
+                    </span>
                   </div>
                   {showProgress && (
                     <div className="ml-6 mr-4 bg-gray-200 rounded-full h-2 mb-2">
