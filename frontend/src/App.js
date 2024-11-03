@@ -610,6 +610,20 @@ const App = () => {
     return iconMap[type] || iconMap.unknown;
   };
 
+  const getSectionName = () => {
+    if (!selectedContent) return "";
+    const sectionPath = decodeURIComponent(selectedContent.path)
+      .replace(/%20/g, " ")
+      .replace(/%5C/g, "/")
+      .replace(/%25/g, "%")
+      .replace(/\\/g, "/")
+      .split("/");
+
+    sectionPath.pop(); // Eliminar el nombre del archivo
+    const sectionName = sectionPath.pop(); // Obtener el nombre de la carpeta
+    return decodeURIComponent(sectionName);
+  };
+
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       {!selectedCourse ? (
@@ -628,7 +642,7 @@ const App = () => {
                 </button>
               </div>
             </div>
-            <div className="overflow-y-auto flex-grow pb-10 p-0">
+            <div className="overflow-y-auto flex-grow pb-10 p-0 custom-scrollbar">
               {structure ? (
                 renderTree(structure)
               ) : (
@@ -658,7 +672,7 @@ const App = () => {
             {selectedContent ? (
               <div className="flex flex-col flex-1 min-h-0">
                 <h2 className="text-lg font-semibold mb-4 text-gray-500">
-                  {getFileName(selectedContent.path)}
+                  {getSectionName()} / {getFileName(selectedContent.path)}
                 </h2>
 
                 {(() => {

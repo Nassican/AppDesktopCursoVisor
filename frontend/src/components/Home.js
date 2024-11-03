@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FileVideo, Folder } from "lucide-react";
+import { FileVideo, Folder, InfoIcon, SearchIcon } from "lucide-react";
 import * as SiIcons from "react-icons/si";
 import IconSelector from "./IconSelector";
 
@@ -11,6 +11,7 @@ const Home = ({ onCourseSelect }) => {
   const [isLoadingModalOpen, setIsLoadingModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [lastWatched, setLastWatched] = useState(null);
+  const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
 
   useEffect(() => {
     fetchCourses();
@@ -42,6 +43,13 @@ const Home = ({ onCourseSelect }) => {
       .pop() // Obtener el último elemento (nombre del archivo)
       .replace(/\.[^/.]+$/, ""); // Remover la extensión
 
+    const sectionPath = decodeURIComponent(lastWatched.videoPath)
+      .replace(/%5C/g, "/")
+      .replace(/\\/g, "/")
+      .split("/");
+    sectionPath.pop(); // Eliminar el nombre del archivo
+    const sectionName = sectionPath.pop(); // Obtener el nombre de la carpeta
+
     return (
       <div className="mb-6 bg-white p-6 rounded-lg shadow-md">
         <h2 className="text-xl font-bold mb-4">Continuar viendo</h2>
@@ -53,7 +61,8 @@ const Home = ({ onCourseSelect }) => {
             <div>
               <h3 className="font-medium text-gray-800">{videoNameDisplay}</h3>
               <p className="text-sm text-gray-500">
-                {courses.find((c) => c.id === lastWatched.courseId)?.name}
+                {courses.find((c) => c.id === lastWatched.courseId)?.name} /{" "}
+                {sectionName}
               </p>
             </div>
           </div>
@@ -111,7 +120,15 @@ const Home = ({ onCourseSelect }) => {
     <div className="p-8 bg-gray-100">
       <div className="max-w-screen-xl mx-auto">
         <div className="flex flex-col">
-          <h1 className="text-3xl font-bold mb-6">Cursos disponibles</h1>
+          <div className="flex justify-between items-center mb-6">
+            <h1 className="text-3xl font-bold">Cursos disponibles</h1>
+            <button
+              onClick={() => setIsAboutModalOpen(true)}
+              className="bg-blue-100 p-2 rounded-full"
+            >
+              <InfoIcon className="text-blue-500" size={24} />
+            </button>
+          </div>
           <div className="relative">
             <input
               type="text"
@@ -120,20 +137,7 @@ const Home = ({ onCourseSelect }) => {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
-            <svg
-              className="absolute left-3 top-3.5 h-5 w-5 text-gray-400"
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
+            <SearchIcon className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
           </div>
           <div className="flex flex-col pt-4">{renderLastWatched()}</div>
         </div>
@@ -227,6 +231,42 @@ const Home = ({ onCourseSelect }) => {
           onClose={() => setIsIconSelectorOpen(false)}
           onSelectIcon={handleIconChange}
         />
+      )}
+      {isAboutModalOpen && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full mx-4">
+            <div className="flex flex-col">
+              <h2 className="text-2xl font-bold mb-4">
+                Acerca de la Aplicación
+              </h2>
+              <p className="text-gray-600 mb-4">
+                Esta aplicación fue diseñada para ayudarte a organizar y ver tus
+                cursos de video, pdfs y documentos de manera eficiente. Puedes
+                personalizar los iconos de los cursos y realizar un seguimiento
+                de tu progreso.
+              </p>
+              <p className="text-gray-600 mb-6">Versión 1.1.0</p>
+              <p className="text-gray-600 mb-6">
+                Realizado por{" "}
+                <a
+                  href="https://github.com/Nassican"
+                  className="flex items-center text-blue-500"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Jesus Benavides
+                  <SiIcons.SiGithub className="ml-2" />
+                </a>
+              </p>
+              <button
+                onClick={() => setIsAboutModalOpen(false)}
+                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors self-end"
+              >
+                Cerrar
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
