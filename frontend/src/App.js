@@ -20,6 +20,7 @@ import * as SiIcons from "react-icons/si";
 import URLViewer from "./components/URLViewer";
 import TextViewer from "./components/TextViewer";
 import HTMLViewer from "./components/HTMLViewer";
+import EPUBViewer from "./components/EPUBViewer";
 
 const PROGRESS_UPDATE_INTERVAL = 10000; // 10 seconds
 
@@ -448,9 +449,7 @@ const App = () => {
                   </div>
                 </div>
               </div>
-              {isExpanded && (
-                <div className="ml-4">{renderTree(value, currentPath)}</div>
-              )}
+              {isExpanded && <div>{renderTree(value, currentPath)}</div>}
             </div>
           );
         } else {
@@ -469,12 +468,13 @@ const App = () => {
             : progress
             ? (progress.currentTime / progress.duration) * 100
             : 0;
+          const showProgress = ["video", "pdf", "html"].includes(value.type);
 
           return (
             <div key={currentPath} className="flex flex-col w-full">
               <div className="hover:bg-gray-100 w-full">
                 <div
-                  className="cursor-pointer p-2 ml-4"
+                  className="cursor-pointer p-2 pl-8 pr-2"
                   onClick={() => {
                     selectContent(value.type, value.path);
                   }}
@@ -484,25 +484,31 @@ const App = () => {
                       size: 16,
                       className: `mr-2 ${icon.props.className}`,
                     })}
-                    <input
-                      type="checkbox"
-                      checked={isWatched}
-                      onChange={(e) =>
-                        handleWatchedChange(filePath, e.target.checked)
-                      }
-                      className="ml-2 mr-2"
-                      onClick={(e) => e.stopPropagation()}
-                    />
+                    {showProgress ? (
+                      <input
+                        type="checkbox"
+                        checked={isWatched}
+                        onChange={(e) =>
+                          handleWatchedChange(filePath, e.target.checked)
+                        }
+                        className="ml-2 mr-2"
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    ) : (
+                      <div className="ml-4"></div>
+                    )}
                     <span>{key}</span>
                   </div>
-                  <div className="ml-6 mr-4 bg-gray-200 rounded-full h-2 mb-2">
-                    <div
-                      className={`h-2 rounded-full ${
-                        isWatched ? "bg-green-500" : "bg-blue-600"
-                      }`}
-                      style={{ width: `${progressPercentage}%` }}
-                    ></div>
-                  </div>
+                  {showProgress && (
+                    <div className="ml-6 mr-4 bg-gray-200 rounded-full h-2 mb-2">
+                      <div
+                        className={`h-2 rounded-full ${
+                          isWatched ? "bg-green-500" : "bg-blue-600"
+                        }`}
+                        style={{ width: `${progressPercentage}%` }}
+                      ></div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -607,7 +613,7 @@ const App = () => {
                 </button>
               </div>
             </div>
-            <div className="overflow-y-auto flex-grow pb-10">
+            <div className="overflow-y-auto flex-grow pb-10 p-0">
               {structure ? (
                 renderTree(structure)
               ) : (
@@ -636,7 +642,7 @@ const App = () => {
             )}
             {selectedContent ? (
               <div className="flex flex-col flex-1 min-h-0">
-                <h2 className="text-lg font-semibold mb-2 text-gray-500">
+                <h2 className="text-lg font-semibold mb-4 text-gray-500">
                   {getFileName(selectedContent.path)}
                 </h2>
 
@@ -740,39 +746,8 @@ const App = () => {
 
                     case "epub":
                       return (
-                        <div className="flex-1 flex items-center justify-center p-8">
-                          <div className="text-center">
-                            <FileText
-                              size={64}
-                              className="mx-auto mb-4 text-blue-500"
-                            />
-                            <h3 className="text-lg font-medium mb-2">
-                              Archivo EPUB
-                            </h3>
-                            <p className="text-gray-600 mb-4">
-                              Este archivo debe ser descargado para su
-                              visualización
-                            </p>
-                            <div className="space-y-4">
-                              <a
-                                href={selectedContent.path}
-                                download
-                                className="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 
-                         text-white rounded-lg transition-colors"
-                              >
-                                <Download size={16} className="mr-2" />
-                                Descargar EPUB
-                              </a>
-                              <div className="text-sm text-gray-500 mt-4">
-                                <p>Recomendamos usar:</p>
-                                <ul className="mt-2">
-                                  <li>• Calibre (Windows/Mac/Linux)</li>
-                                  <li>• Apple Books (iOS/Mac)</li>
-                                  <li>• Google Play Libros (Android)</li>
-                                </ul>
-                              </div>
-                            </div>
-                          </div>
+                        <div className="flex-1 bg-white rounded-lg overflow-hidden flex flex-col">
+                          <EPUBViewer filePath={selectedContent.path} />
                         </div>
                       );
 
