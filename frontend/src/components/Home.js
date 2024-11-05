@@ -240,12 +240,12 @@ const Home = ({ onCourseSelect }) => {
                 Acerca de la Aplicación
               </h2>
               <p className="text-gray-600 mb-4">
-                Esta aplicación fue diseñada para ayudarte a organizar y ver tus
+                Esta aplicación fue diseñada para ayudar a organizar y ver
                 cursos de video, pdfs y documentos de manera eficiente. Puedes
                 personalizar los iconos de los cursos y realizar un seguimiento
                 de tu progreso.
               </p>
-              <p className="text-gray-600 mb-6">Versión 1.1.0</p>
+              <p className="text-gray-600 mb-6">Versión 2.0</p>
               <p className="text-gray-600 mb-6">
                 Realizado por{" "}
                 <a
