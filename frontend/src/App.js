@@ -11,7 +11,6 @@ import {
   Image,
   Archive,
   Link,
-  Download,
 } from "lucide-react";
 import axios from "axios";
 import { fileHistoryService } from "./services/api/fileHistoryService";
@@ -31,6 +30,8 @@ import {
   customSort,
   getSectionName,
 } from "./utils/fileUtils";
+import ZIPViewer from "./components/views/ZIPViewer";
+import PDFViewer from "./components/views/PDFViewer";
 
 const PROGRESS_UPDATE_INTERVAL = 10000; // 10 seconds
 
@@ -607,97 +608,22 @@ const App = () => {
                       );
 
                     case "text":
-                      return (
-                        <div className="flex-1 bg-white rounded-lg shadow-inner p-4 overflow-auto">
-                          <pre className="whitespace-pre-wrap font-mono text-sm">
-                            <TextViewer filePath={selectedContent.path} />
-                          </pre>
-                        </div>
-                      );
+                      return <TextViewer filePath={selectedContent.path} />;
 
                     case "url":
-                      return (
-                        <div className="flex-1 flex items-center justify-center">
-                          <URLViewer filePath={selectedContent.path} />
-                        </div>
-                      );
+                      return <URLViewer filePath={selectedContent.path} />;
 
                     case "html":
-                      return (
-                        <div className="flex-1 bg-white rounded-lg overflow-hidden">
-                          <HTMLViewer filePath={selectedContent.path} />
-                        </div>
-                      );
+                      return <HTMLViewer filePath={selectedContent.path} />;
 
                     case "pdf":
-                      return (
-                        <div className="flex-1 bg-white rounded-lg overflow-hidden flex flex-col">
-                          <object
-                            data={selectedContent.path}
-                            type="application/pdf"
-                            className="w-full h-full"
-                          >
-                            <div className="flex-1 flex items-center justify-center p-8">
-                              <div className="text-center">
-                                <FilePdf
-                                  size={64}
-                                  className="mx-auto mb-4 text-blue-500"
-                                />
-                                <h3 className="text-lg font-medium mb-2">
-                                  No se puede mostrar el PDF
-                                </h3>
-                                <p className="text-gray-600 mb-4">
-                                  Tu navegador no puede mostrar PDFs integrados.
-                                </p>
-                                <a
-                                  href={selectedContent.path}
-                                  download
-                                  className="inline-flex items-center px-4 py-2 bg-blue-500 hover:bg-blue-600 
-                       text-white rounded-lg transition-colors"
-                                >
-                                  <Download size={16} className="mr-2" />
-                                  Descargar PDF
-                                </a>
-                              </div>
-                            </div>
-                          </object>
-                        </div>
-                      );
+                      return <PDFViewer filePath={selectedContent.path} />;
 
                     case "epub":
-                      return (
-                        <div className="flex-1 bg-white rounded-lg overflow-hidden flex flex-col">
-                          <EPUBViewer filePath={selectedContent.path} />
-                        </div>
-                      );
+                      return <EPUBViewer filePath={selectedContent.path} />;
 
                     case "zip":
-                      return (
-                        <div className="flex-1 flex items-center justify-center p-8">
-                          <div className="text-center">
-                            <Archive
-                              size={64}
-                              className="mx-auto mb-4 text-purple-500"
-                            />
-                            <h3 className="text-lg font-medium mb-2">
-                              Archivo Comprimido
-                            </h3>
-                            <p className="text-gray-600 mb-4">
-                              Este archivo debe ser descargado para su
-                              visualización
-                            </p>
-                            <a
-                              href={selectedContent.path}
-                              download
-                              className="inline-flex items-center px-4 py-2 bg-purple-500 hover:bg-purple-600 
-                           text-white rounded-lg transition-colors"
-                            >
-                              <Download size={16} className="mr-2" />
-                              Descargar
-                            </a>
-                          </div>
-                        </div>
-                      );
+                      return <ZIPViewer filePath={selectedContent.path} />;
 
                     default:
                       return (

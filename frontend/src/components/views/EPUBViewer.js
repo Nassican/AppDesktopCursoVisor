@@ -364,41 +364,43 @@ const EPUBViewer = ({ filePath }) => {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      {renderControls()}
+    <div className="flex-1 bg-white rounded-lg overflow-hidden flex flex-col">
+      <div className="h-full flex flex-col">
+        {renderControls()}
 
-      <div className="flex-1 flex relative">
-        {showToc && (
-          <div className="absolute left-0 top-0 w-72 h-full bg-white dark:bg-gray-800 border-r shadow-lg z-10">
-            <div className="p-4 overflow-y-auto h-[calc(100%-64px)]">
-              {toc.map((chapter, index) => (
-                <button
-                  key={index}
-                  onClick={() => navigation.toLocation(chapter.href)}
-                  className="block w-full text-left py-3 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg mb-1 transition-colors"
-                >
-                  {chapter.label}
-                </button>
-              ))}
+        <div className="flex-1 flex relative">
+          {showToc && (
+            <div className="absolute left-0 top-0 w-72 h-full bg-white dark:bg-gray-800 border-r shadow-lg z-10">
+              <div className="p-4 overflow-y-auto h-[calc(100%-64px)]">
+                {toc.map((chapter, index) => (
+                  <button
+                    key={index}
+                    onClick={() => navigation.toLocation(chapter.href)}
+                    className="block w-full text-left py-3 px-4 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg mb-1 transition-colors"
+                  >
+                    {chapter.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <div className="flex-1">
-          <ReactReader
-            url={filePath}
-            location={location}
-            locationChanged={locationChanged}
-            getRendition={getRendition}
-            tocChanged={setToc}
-            epubOptions={{
-              flow: "paginated",
-              manager: "default",
-              snap: false,
-              spread: spread,
-            }}
-            readerStyles={themes[theme].readerTheme}
-          />
+          <div className="flex-1">
+            <ReactReader
+              url={filePath}
+              location={location}
+              locationChanged={locationChanged}
+              getRendition={getRendition}
+              tocChanged={setToc}
+              epubOptions={{
+                flow: "paginated",
+                manager: "default",
+                snap: false,
+                spread: spread,
+              }}
+              readerStyles={themes[theme].readerTheme}
+            />
+          </div>
         </div>
       </div>
     </div>

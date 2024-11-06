@@ -119,13 +119,15 @@ const HTMLViewer = ({ filePath, theme = "light" }) => {
   `;
 
   return (
-    <iframe
-      title="Contenido HTML"
-      srcDoc={styledHTML}
-      className="w-full h-full border-0"
-      style={{ minHeight: "calc(100vh - 12rem)" }}
-      sandbox="allow-same-origin allow-scripts"
-    />
+    <div className="flex-1 bg-white rounded-lg overflow-hidden">
+      <iframe
+        title="Contenido HTML"
+        srcDoc={styledHTML}
+        className="w-full h-full border-0"
+        style={{ minHeight: "calc(100vh - 12rem)" }}
+        sandbox="allow-same-origin allow-scripts"
+      />
+    </div>
   );
 };
 
