@@ -16,12 +16,15 @@ import axios from "axios";
 import { fileHistoryService } from "./services/api/fileHistoryService";
 import Home from "./components/Home/Home";
 import * as SiIcons from "react-icons/si";
+
 import URLViewer from "./components/views/URLViewer";
 import TextViewer from "./components/views/TextViewer";
 import HTMLViewer from "./components/views/HTMLViewer";
 import EPUBViewer from "./components/views/EPUBViewer";
 import VideoViewer from "./components/views/VideoViewer";
 import ImageViewer from "./components/views/ImageViewer";
+import ZIPViewer from "./components/views/ZIPViewer";
+import PDFViewer from "./components/views/PDFViewer";
 
 import {
   getFileName,
@@ -30,8 +33,6 @@ import {
   customSort,
   getSectionName,
 } from "./utils/fileUtils";
-import ZIPViewer from "./components/views/ZIPViewer";
-import PDFViewer from "./components/views/PDFViewer";
 
 const PROGRESS_UPDATE_INTERVAL = 10000; // 10 seconds
 
@@ -243,14 +244,23 @@ const App = () => {
   const handleVideoTimeUpdate = useCallback(
     (e) => {
       const video = e.target;
-      const newProgress = {
-        currentTime: video.currentTime,
-        duration: video.duration,
-      };
-      updateVideoProgressLocally(selectedContent.path, newProgress);
+      if (video.paused) return;
 
-      if (video.currentTime === video.duration) {
-        handleWatchedChange(selectedContent.path, true);
+      // Solo actualizar cada 1 segundo
+      const currentTime = Math.floor(video.currentTime);
+      const lastTime =
+        lastProgressUpdateRef.current[selectedContent.path]?.currentTime;
+
+      if (lastTime === undefined || Math.abs(currentTime - lastTime) >= 1) {
+        const newProgress = {
+          currentTime: video.currentTime,
+          duration: video.duration,
+        };
+        updateVideoProgressLocally(selectedContent.path, newProgress);
+
+        if (video.currentTime >= video.duration - 0.5) {
+          handleWatchedChange(selectedContent.path, true);
+        }
       }
     },
     [selectedContent, handleWatchedChange, updateVideoProgressLocally]
@@ -258,9 +268,11 @@ const App = () => {
 
   const handleVideoPause = useCallback(() => {
     setIsVideoPaused(true);
-    const lastProgress = lastProgressUpdateRef.current[selectedContent.path];
-    if (lastProgress) {
-      updateVideoProgressToBackend(selectedContent.path, lastProgress);
+    if (selectedContent) {
+      const lastProgress = lastProgressUpdateRef.current[selectedContent.path];
+      if (lastProgress) {
+        updateVideoProgressToBackend(selectedContent.path, lastProgress);
+      }
     }
   }, [selectedContent, updateVideoProgressToBackend]);
 
