@@ -33,13 +33,13 @@ import {
   customSort,
   getSectionName,
 } from "./utils/fileUtils";
+import { useFolder } from "./hooks/useFolder";
 
 const PROGRESS_UPDATE_INTERVAL = 10000; // 10 seconds
 
 const App = () => {
   const [structure, setStructure] = useState(null);
   const [selectedContent, setSelectedContent] = useState(null);
-  const [expandedFolders, setExpandedFolders] = useState({});
   const [, setFolderPath] = useState("");
   const [videoProgress, setVideoProgress] = useState({});
   const [videoHistory, setVideoHistory] = useState({});
@@ -48,6 +48,7 @@ const App = () => {
   const lastProgressUpdateRef = useRef({});
   const [isVideoPaused, setIsVideoPaused] = useState(true);
   const [courseInfo, setCourseInfo] = useState(null);
+  const { expandedFolders, setExpandedFolders, toggleFolder } = useFolder();
 
   useEffect(() => {
     if (selectedCourse) {
@@ -112,24 +113,6 @@ const App = () => {
       console.error("Error fetching folder structure:", error);
       return null;
     }
-  };
-
-  const toggleFolder = (path) => {
-    console.log("Toggling folder:", path);
-
-    setExpandedFolders((prev) => {
-      // Si el folder ya está abierto, lo cerramos
-      if (prev[path]) {
-        const newExpandedFolders = { ...prev };
-        delete newExpandedFolders[path];
-        return newExpandedFolders;
-      }
-      // Si está cerrado, lo abrimos manteniendo los demás estados
-      return {
-        ...prev,
-        [path]: true,
-      };
-    });
   };
 
   const updateVideoProgressToBackend = useCallback(
