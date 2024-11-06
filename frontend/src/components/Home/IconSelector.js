@@ -1,12 +1,31 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect, useCallback } from "react";
 import * as SiIcons from "react-icons/si";
-import { Search, X } from "lucide-react";
+import { Search, X, Loader } from "lucide-react";
 
 const IconSelector = ({ isOpen, onClose, onSelectIcon }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedIcon, setSelectedIcon] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const icons = useMemo(() => Object.keys(SiIcons), []);
+
+  useEffect(() => {
+    if (isOpen) {
+      setIsLoading(true);
+      const timer = setTimeout(() => {
+        setIsLoading(false);
+      }, 50);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      setSearchTerm("");
+      setSelectedIcon(null);
+      setIsLoading(true);
+    }
+  }, [isOpen]);
 
   const filteredIcons = useMemo(() => {
     return icons.filter((iconName) =>
@@ -14,12 +33,21 @@ const IconSelector = ({ isOpen, onClose, onSelectIcon }) => {
     );
   }, [icons, searchTerm]);
 
-  if (!isOpen) return null;
+  const handleIconSelect = useCallback(
+    (iconName) => {
+      setSelectedIcon(iconName);
+      onSelectIcon(iconName);
+    },
+    [onSelectIcon]
+  );
 
-  const handleIconSelect = (iconName) => {
-    setSelectedIcon(iconName);
-    onSelectIcon(iconName);
-  };
+  const handleClose = useCallback(() => {
+    setSearchTerm("");
+    setSelectedIcon(null);
+    onClose();
+  }, [onClose]);
+
+  if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -29,7 +57,7 @@ const IconSelector = ({ isOpen, onClose, onSelectIcon }) => {
             Selecciona un icono
           </h2>
           <button
-            onClick={onClose}
+            onClick={handleClose}
             className="p-2 hover:bg-gray-100 rounded-full transition-colors"
             aria-label="Cerrar selector de iconos"
           >
@@ -44,12 +72,18 @@ const IconSelector = ({ isOpen, onClose, onSelectIcon }) => {
             className="w-full p-3 pl-10 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
+            disabled={isLoading}
           />
           <Search className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
         </div>
 
         <div className="overflow-y-auto flex-grow">
-          {filteredIcons.length > 0 ? (
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-12">
+              <Loader className="w-8 h-8 text-blue-500 animate-spin" />
+              <p className="mt-4 text-gray-600">Cargando iconos...</p>
+            </div>
+          ) : filteredIcons.length > 0 ? (
             <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-4">
               {filteredIcons.map((iconName) => {
                 const IconComponent = SiIcons[iconName];
@@ -93,4 +127,4 @@ const IconSelector = ({ isOpen, onClose, onSelectIcon }) => {
   );
 };
 
-export default IconSelector;
+export default React.memo(IconSelector);
