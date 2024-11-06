@@ -14,13 +14,23 @@ import {
   Download,
 } from "lucide-react";
 import axios from "axios";
-import { fileHistoryService } from "./components/fileHistoryService";
-import Home from "./components/Home";
+import { fileHistoryService } from "./services/api/fileHistoryService";
+import Home from "./components/Home/Home";
 import * as SiIcons from "react-icons/si";
 import URLViewer from "./components/views/URLViewer";
 import TextViewer from "./components/views/TextViewer";
 import HTMLViewer from "./components/views/HTMLViewer";
 import EPUBViewer from "./components/views/EPUBViewer";
+import VideoViewer from "./components/views/VideoViewer";
+import ImageViewer from "./components/views/ImageViewer";
+
+import {
+  getFileName,
+  getFileType,
+  truncateFileName,
+  customSort,
+  getSectionName,
+} from "./utils/fileUtils";
 
 const PROGRESS_UPDATE_INTERVAL = 10000; // 10 seconds
 
@@ -277,21 +287,6 @@ const App = () => {
     };
   }, [selectedContent, updateVideoProgressToBackend, isVideoPaused]);
 
-  const customSort = (a, b) => {
-    const aIsNumber = /^\d+/.test(a);
-    const bIsNumber = /^\d+/.test(b);
-
-    if (aIsNumber && bIsNumber) {
-      return parseInt(a) - parseInt(b);
-    } else if (aIsNumber) {
-      return -1;
-    } else if (bIsNumber) {
-      return 1;
-    } else {
-      return a.localeCompare(b);
-    }
-  };
-
   const handleCourseSelect = (courseId, initialVideoPath = null) => {
     if (!courseId) return;
 
@@ -402,16 +397,6 @@ const App = () => {
     },
     [selectedCourse, videoHistory]
   );
-
-  const MAX_FILENAME_LENGTH = 35; // Constante para el límite de caracteres
-
-  const truncateFileName = (fileName) => {
-    if (fileName.length <= MAX_FILENAME_LENGTH) return fileName;
-    const extension = fileName.split(".").pop();
-    const nameWithoutExt = fileName.slice(0, fileName.lastIndexOf("."));
-    const truncated = nameWithoutExt.slice(0, MAX_FILENAME_LENGTH - 3) + "...";
-    return `${truncated}.${extension}`;
-  };
 
   const renderTree = (node, path = "") => {
     return Object.entries(node)
@@ -532,68 +517,6 @@ const App = () => {
       });
   };
 
-  const getFileName = (path) => {
-    if (!path) return "";
-    try {
-      const decodedPath = decodeURIComponent(path);
-      const filePath = decodedPath.split("/api/file/")[1];
-      const fileName = filePath.split("/").pop();
-
-      // Decodificar y limpiar el nombre del archivo
-      const cleanFileName = decodeURIComponent(fileName)
-        .replace(/%20/g, " ")
-        .replace(/%5C/g, "/")
-        .replace(/%25/g, "%")
-        .replace(/\\/g, "/")
-        .split("/")
-        .pop();
-
-      // Eliminar la extensión del archivo
-      return cleanFileName.replace(/\.[^/.]+$/, "");
-    } catch (error) {
-      console.error("Error decodificando el nombre del archivo:", error);
-      return path;
-    }
-  };
-
-  const getFileType = (filePath) => {
-    const extension = filePath.toLowerCase().split(".").pop();
-
-    const fileTypes = {
-      // Videos
-      mp4: "video",
-      webm: "video",
-      mkv: "video",
-
-      // Imágenes
-      jpg: "image",
-      jpeg: "image",
-      png: "image",
-      gif: "image",
-      webp: "image",
-
-      // Documentos
-      pdf: "pdf",
-      html: "html",
-      txt: "text",
-      md: "text",
-      epub: "epub",
-
-      // Archivos comprimidos
-      zip: "zip",
-      rar: "zip",
-      "7z": "zip",
-
-      // Enlaces
-      url: "url",
-
-      // Otros
-      default: "unknown",
-    };
-
-    return fileTypes[extension] || fileTypes.default;
-  };
-
   const getFileIcon = (type) => {
     const iconMap = {
       video: <FileVideo size={16} className="text-red-500" />,
@@ -608,20 +531,6 @@ const App = () => {
     };
 
     return iconMap[type] || iconMap.unknown;
-  };
-
-  const getSectionName = () => {
-    if (!selectedContent) return "";
-    const sectionPath = decodeURIComponent(selectedContent.path)
-      .replace(/%20/g, " ")
-      .replace(/%5C/g, "/")
-      .replace(/%25/g, "%")
-      .replace(/\\/g, "/")
-      .split("/");
-
-    sectionPath.pop(); // Eliminar el nombre del archivo
-    const sectionName = sectionPath.pop(); // Obtener el nombre de la carpeta
-    return decodeURIComponent(sectionName);
   };
 
   return (
@@ -672,47 +581,29 @@ const App = () => {
             {selectedContent ? (
               <div className="flex flex-col flex-1 min-h-0">
                 <h2 className="text-lg font-semibold mb-4 text-gray-500">
-                  {getSectionName()} / {getFileName(selectedContent.path)}
+                  {getSectionName(selectedContent)} /{" "}
+                  {getFileName(selectedContent.path)}
                 </h2>
 
                 {(() => {
                   switch (selectedContent.type) {
                     case "video":
                       return (
-                        <div className="relative flex-1 bg-black rounded-lg overflow-hidden">
-                          <video
-                            src={selectedContent.path}
-                            controls
-                            className="h-full w-full object-contain"
-                            onTimeUpdate={handleVideoTimeUpdate}
-                            onPause={handleVideoPause}
-                            onPlay={handleVideoPlay}
-                            key={selectedContent.path}
-                            onLoadedMetadata={(e) => {
-                              const video = e.target;
-                              const savedProgress =
-                                videoProgress[selectedContent.path];
-                              if (
-                                savedProgress &&
-                                savedProgress.currentTime &&
-                                isFinite(savedProgress.currentTime)
-                              ) {
-                                video.currentTime = savedProgress.currentTime;
-                              }
-                            }}
-                          />
-                        </div>
+                        <VideoViewer
+                          filePath={selectedContent.path}
+                          onTimeUpdate={handleVideoTimeUpdate}
+                          onPause={handleVideoPause}
+                          onPlay={handleVideoPlay}
+                          videoProgress={videoProgress}
+                        />
                       );
 
                     case "image":
                       return (
-                        <div className="relative flex-1 bg-gray-100 rounded-lg overflow-hidden flex items-center justify-center">
-                          <img
-                            src={selectedContent.path}
-                            alt={getFileName(selectedContent.path)}
-                            className="max-h-full max-w-full object-contain"
-                          />
-                        </div>
+                        <ImageViewer
+                          filePath={selectedContent.path}
+                          fileName={getFileName(selectedContent.path)}
+                        />
                       );
 
                     case "text":

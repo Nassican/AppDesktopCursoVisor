@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { FileVideo, Folder, InfoIcon, SearchIcon } from "lucide-react";
+import { Folder, InfoIcon, SearchIcon } from "lucide-react";
 import * as SiIcons from "react-icons/si";
 import IconSelector from "./IconSelector";
+import LastWatched from "./LastWatched";
+import LoadingModal from "../common/LoadingModal";
+import AboutModal from "../common/AboutModal";
 
 const Home = ({ onCourseSelect }) => {
   const [courses, setCourses] = useState([]);
@@ -30,57 +33,6 @@ const Home = ({ onCourseSelect }) => {
     } catch (error) {
       console.error("Error fetching last watched:", error);
     }
-  };
-
-  const renderLastWatched = () => {
-    if (!lastWatched) return null;
-
-    // Obtener solo el nombre del video sin la ruta completa
-    const videoNameDisplay = decodeURIComponent(lastWatched.videoPath)
-      .replace(/%5C/g, "/") // Reemplazar %5C por /
-      .replace(/\\/g, "/") // Reemplazar \ por /
-      .split("/")
-      .pop() // Obtener el último elemento (nombre del archivo)
-      .replace(/\.[^/.]+$/, ""); // Remover la extensión
-
-    const sectionPath = decodeURIComponent(lastWatched.videoPath)
-      .replace(/%5C/g, "/")
-      .replace(/\\/g, "/")
-      .split("/");
-    sectionPath.pop(); // Eliminar el nombre del archivo
-    const sectionName = sectionPath.pop(); // Obtener el nombre de la carpeta
-
-    return (
-      <div className="mb-6 bg-white p-6 rounded-lg shadow-md">
-        <h2 className="text-xl font-bold mb-4">Continuar viendo</h2>
-        <div className="flex items-center justify-between">
-          <div className="flex items-center">
-            <div className="bg-blue-100 p-3 rounded-lg mr-4">
-              <FileVideo className="text-blue-500" size={24} />
-            </div>
-            <div>
-              <h3 className="font-medium text-gray-800">{videoNameDisplay}</h3>
-              <p className="text-sm text-gray-500">
-                {courses.find((c) => c.id === lastWatched.courseId)?.name} /{" "}
-                {sectionName}
-              </p>
-            </div>
-          </div>
-          <button
-            onClick={() => {
-              onCourseSelect(
-                lastWatched.courseId,
-                lastWatched.videoPath,
-                lastWatched.expandedFolders
-              );
-            }}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
-          >
-            Continuar
-          </button>
-        </div>
-      </div>
-    );
   };
 
   const fetchCourses = async () => {
@@ -139,7 +91,13 @@ const Home = ({ onCourseSelect }) => {
             />
             <SearchIcon className="absolute left-3 top-3.5 h-5 w-5 text-gray-400" />
           </div>
-          <div className="flex flex-col pt-4">{renderLastWatched()}</div>
+          <div className="flex flex-col pt-4">
+            <LastWatched
+              lastWatched={lastWatched}
+              courses={courses}
+              onCourseSelect={onCourseSelect}
+            />
+          </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredCourses.map((course) => {
@@ -207,67 +165,20 @@ const Home = ({ onCourseSelect }) => {
           })}
         </div>
       </div>
-      {isLoadingModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-xl shadow-2xl max-w-sm w-full mx-4">
-            <div className="flex flex-col items-center">
-              <div className="relative flex items-center justify-center">
-                <div className="relative">
-                  <div className="h-12 w-12 rounded-full border-4 border-blue-100 border-t-blue-500 animate-spin shadow-lg"></div>
-                </div>
-              </div>
-              <p className="mt-6 text-center text-lg font-semibold text-gray-700">
-                Cargando selector de iconos...
-              </p>
-              <p className="mt-2 text-center text-sm text-gray-500">
-                Esto solo tomará un momento
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
-      {isIconSelectorOpen && (
-        <IconSelector
-          onClose={() => setIsIconSelectorOpen(false)}
-          onSelectIcon={handleIconChange}
-        />
-      )}
-      {isAboutModalOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-8 rounded-xl shadow-2xl max-w-md w-full mx-4">
-            <div className="flex flex-col">
-              <h2 className="text-2xl font-bold mb-4">
-                Acerca de la Aplicación
-              </h2>
-              <p className="text-gray-600 mb-4">
-                Esta aplicación fue diseñada para ayudar a organizar y ver
-                cursos de video, pdfs y documentos de manera eficiente. Puedes
-                personalizar los iconos de los cursos y realizar un seguimiento
-                de tu progreso.
-              </p>
-              <p className="text-gray-600 mb-6">Versión 2.0</p>
-              <p className="text-gray-600 mb-6">
-                Realizado por{" "}
-                <a
-                  href="https://github.com/Nassican"
-                  className="flex items-center text-blue-500"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Jesus Benavides
-                  <SiIcons.SiGithub className="ml-2" />
-                </a>
-              </p>
-              <button
-                onClick={() => setIsAboutModalOpen(false)}
-                className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors self-end"
-              >
-                Cerrar
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <LoadingModal
+        isOpen={isLoadingModalOpen}
+        message="Cargando selector de iconos..."
+        subMessage="Esto solo tomará un momento"
+      />
+      <IconSelector
+        isOpen={isIconSelectorOpen}
+        onClose={() => setIsIconSelectorOpen(false)}
+        onSelectIcon={handleIconChange}
+      />
+      <AboutModal
+        isOpen={isAboutModalOpen}
+        onClose={() => setIsAboutModalOpen(false)}
+      />
     </div>
   );
 };
