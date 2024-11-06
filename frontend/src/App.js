@@ -17,10 +17,10 @@ import axios from "axios";
 import { fileHistoryService } from "./components/fileHistoryService";
 import Home from "./components/Home";
 import * as SiIcons from "react-icons/si";
-import URLViewer from "./components/URLViewer";
-import TextViewer from "./components/TextViewer";
-import HTMLViewer from "./components/HTMLViewer";
-import EPUBViewer from "./components/EPUBViewer";
+import URLViewer from "./components/views/URLViewer";
+import TextViewer from "./components/views/TextViewer";
+import HTMLViewer from "./components/views/HTMLViewer";
+import EPUBViewer from "./components/views/EPUBViewer";
 
 const PROGRESS_UPDATE_INTERVAL = 10000; // 10 seconds
 
