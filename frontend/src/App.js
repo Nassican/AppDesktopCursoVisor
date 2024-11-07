@@ -1,30 +1,11 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import { Folder, Home as HomeIcon } from "lucide-react";
 import axios from "axios";
 import { fileHistoryService } from "./services/api/fileHistoryService";
 import Home from "./components/Home/Home";
-import * as SiIcons from "react-icons/si";
 
-import URLViewer from "./components/views/URLViewer";
-import TextViewer from "./components/views/TextViewer";
-import HTMLViewer from "./components/views/HTMLViewer";
-import EPUBViewer from "./components/views/EPUBViewer";
-import VideoViewer from "./components/views/VideoViewer";
-import ImageViewer from "./components/views/ImageViewer";
-import ZIPViewer from "./components/views/ZIPViewer";
-import PDFViewer from "./components/views/PDFViewer";
-
-import {
-  getFileName,
-  getFileType,
-  truncateFileName,
-  customSort,
-  getSectionName,
-  getFileIcon,
-} from "./utils/fileUtils";
+import { getFileName, getSectionName } from "./utils/fileUtils";
 import { useFolder } from "./hooks/useFolder";
-import FolderItem from "./components/MainContent/TreeFolder/FolderItem";
-import FileItem from "./components/MainContent/TreeFolder/FileItem";
+import CourseView from "./components/MainContent/ContentView/CourseView";
 
 const PROGRESS_UPDATE_INTERVAL = 10000; // 10 seconds
 
@@ -391,193 +372,31 @@ const App = () => {
     [selectedCourse, videoHistory]
   );
 
-  const renderTree = (node, path = "") => {
-    return Object.entries(node)
-      .sort(([a], [b]) => customSort(a, b))
-      .map(([key, value]) => {
-        const currentPath = path ? `${path}/${key}` : key;
-        const isFolder = typeof value === "object" && !value.type;
-
-        if (isFolder) {
-          const isExpanded = expandedFolders[currentPath];
-          const folderProgress = calculateFolderProgress(value);
-
-          return (
-            <FolderItem
-              currentPath={currentPath}
-              isExpanded={isExpanded}
-              toggleFolder={toggleFolder}
-              folderName={key}
-              folderProgress={folderProgress}
-            >
-              {renderTree(value, currentPath)}
-            </FolderItem>
-          );
-        } else {
-          // Obtener el tipo e icono usando las funciones existentes
-          const type = getFileType(key);
-          const icon = getFileIcon(type);
-
-          const completePath = `${selectedCourse}/${value.path}`;
-          const filePath = `http://localhost:3001/api/file/${encodeURIComponent(
-            completePath
-          )}`;
-          const progress = videoProgress[filePath];
-          const isWatched = videoHistory[filePath] || false;
-          const progressPercentage = isWatched
-            ? 100
-            : progress
-            ? (progress.currentTime / progress.duration) * 100
-            : 0;
-          const showProgress = ["video", "pdf", "html"].includes(value.type);
-
-          return (
-            <FileItem
-              currentPath={currentPath}
-              icon={icon}
-              showProgress={showProgress}
-              isWatched={isWatched}
-              filePath={filePath}
-              handleWatchedChange={handleWatchedChange}
-              fileName={truncateFileName(key)}
-              progressPercentage={progressPercentage}
-              onSelect={selectContent}
-              value={value}
-            />
-          );
-        }
-      });
-  };
-
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       {!selectedCourse ? (
         <Home onCourseSelect={handleCourseSelect} />
       ) : (
-        <div className="flex flex-grow overflow-hidden">
-          <div className="w-1/4 bg-white border-r shadow-md flex flex-col">
-            <div className="sticky top-0 z-10 bg-white border-b">
-              <div className="flex items-center justify-between p-4">
-                <h2 className="text-xl font-bold text-gray-800">CursoVisor</h2>
-                <button
-                  onClick={goToHome}
-                  className="text-blue-500 hover:text-blue-700"
-                >
-                  <HomeIcon size={24} />
-                </button>
-              </div>
-            </div>
-            <div className="overflow-y-auto flex-grow pb-10 p-0 custom-scrollbar">
-              {structure ? (
-                renderTree(structure)
-              ) : (
-                <p>Cargando estructura de carpetas...</p>
-              )}
-            </div>
-          </div>
-
-          <div className="w-full p-4 flex flex-col h-[calc(100vh)]">
-            {courseInfo && (
-              <div className="flex-shrink-0 mb-4 flex items-center">
-                {courseInfo.icon && SiIcons[courseInfo.icon] ? (
-                  SiIcons[courseInfo.icon]({
-                    size: 24,
-                    className: "text-gray-500 mr-4",
-                  })
-                ) : (
-                  <Folder size={24} className="text-gray-500 mr-4" />
-                )}
-                <div>
-                  <h3 className="text-lg font-medium text-gray-500">
-                    {courseInfo.name}
-                  </h3>
-                </div>
-              </div>
-            )}
-            {selectedContent ? (
-              <div className="flex flex-col flex-1 min-h-0">
-                <h2 className="text-lg font-semibold mb-4 text-gray-500">
-                  {getSectionName(selectedContent)} /{" "}
-                  {getFileName(selectedContent.path)}
-                </h2>
-
-                {(() => {
-                  switch (selectedContent.type) {
-                    case "video":
-                      return (
-                        <VideoViewer
-                          filePath={selectedContent.path}
-                          onTimeUpdate={handleVideoTimeUpdate}
-                          onPause={handleVideoPause}
-                          onPlay={handleVideoPlay}
-                          onEnded={handleVideoEnded}
-                          videoProgress={videoProgress}
-                        />
-                      );
-
-                    case "image":
-                      return (
-                        <ImageViewer
-                          filePath={selectedContent.path}
-                          fileName={getFileName(selectedContent.path)}
-                        />
-                      );
-
-                    case "text":
-                      return <TextViewer filePath={selectedContent.path} />;
-
-                    case "url":
-                      return <URLViewer filePath={selectedContent.path} />;
-
-                    case "html":
-                      return <HTMLViewer filePath={selectedContent.path} />;
-
-                    case "pdf":
-                      return <PDFViewer filePath={selectedContent.path} />;
-
-                    case "epub":
-                      return <EPUBViewer filePath={selectedContent.path} />;
-
-                    case "zip":
-                      return <ZIPViewer filePath={selectedContent.path} />;
-
-                    default:
-                      return (
-                        <div className="flex-1 flex items-center justify-center">
-                          <p className="text-gray-500">
-                            No se puede previsualizar este tipo de archivo
-                          </p>
-                        </div>
-                      );
-                  }
-                })()}
-              </div>
-            ) : (
-              <div className="flex items-center justify-center h-full">
-                <div className="text-center">
-                  {courseInfo && (
-                    <div className="mb-8 flex flex-col items-center">
-                      {courseInfo.icon && SiIcons[courseInfo.icon] ? (
-                        SiIcons[courseInfo.icon]({
-                          size: 256,
-                          className: "text-blue-500 mb-4",
-                        })
-                      ) : (
-                        <Folder size={256} className="text-blue-500 mb-4" />
-                      )}
-                      <h3 className="text-2xl font-bold mb-2">
-                        {courseInfo.name}
-                      </h3>
-                      <p className="text-lg text-gray-600 mb-4">
-                        Selecciona un archivo para visualizarlo.
-                      </p>
-                    </div>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        <CourseView
+          structure={structure}
+          selectedCourse={selectedCourse}
+          expandedFolders={expandedFolders}
+          toggleFolder={toggleFolder}
+          videoProgress={videoProgress}
+          videoHistory={videoHistory}
+          handleWatchedChange={handleWatchedChange}
+          selectContent={selectContent}
+          calculateFolderProgress={calculateFolderProgress}
+          goToHome={goToHome}
+          courseInfo={courseInfo}
+          selectedContent={selectedContent}
+          getSectionName={getSectionName}
+          getFileName={getFileName}
+          handleVideoTimeUpdate={handleVideoTimeUpdate}
+          handleVideoPause={handleVideoPause}
+          handleVideoPlay={handleVideoPlay}
+          handleVideoEnded={handleVideoEnded}
+        />
       )}
     </div>
   );
