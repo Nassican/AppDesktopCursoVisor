@@ -1,21 +1,44 @@
 import React from "react";
 
-const ProgressBar = ({ filesWatched, totalFiles }) => {
+const ProgressBarCourse = ({ filesWatched, totalFiles }) => {
   const progressPercentage = (filesWatched / totalFiles) * 100;
+  const isComplete = filesWatched === totalFiles;
 
   return (
-    <>
-      <div className="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700 mb-2">
-        <div
-          className="bg-blue-600 h-2.5 rounded-full"
-          style={{ width: `${progressPercentage}%` }}
-        />
+    <div className="w-full">
+      <div className="relative">
+        {/* Barra de fondo */}
+        <div className="w-full bg-gray-100 rounded-full h-3 mb-2.5 shadow-inner">
+          {/* Barra de progreso */}
+          <div
+            className={`h-full rounded-full transition-all duration-700 ease-in-out 
+              ${
+                isComplete ? "bg-green-500" : "bg-blue-500"
+              } relative overflow-hidden`}
+            style={{ width: `${progressPercentage}%` }}
+          >
+            {/* Efecto de brillo */}
+            <div className="absolute inset-0 overflow-hidden">
+              <div className="h-full w-1/2 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shine absolute -left-full" />
+            </div>
+          </div>
+        </div>
+
+        <div className="flex justify-between items-center text-sm">
+          <span className="text-gray-600 font-medium">
+            {filesWatched} / {totalFiles} archivos vistos
+          </span>
+          <span
+            className={`font-semibold ${
+              isComplete ? "text-green-600" : "text-blue-600"
+            }`}
+          >
+            {progressPercentage.toFixed(0)}%
+          </span>
+        </div>
       </div>
-      <p className="text-sm text-gray-600">
-        {filesWatched} / {totalFiles} archivos vistos
-      </p>
-    </>
+    </div>
   );
 };
 
-export default ProgressBar;
+export default ProgressBarCourse;

@@ -1,5 +1,5 @@
 import { useCallback, useRef } from "react";
-import { courseService } from "../services/api/courseService";
+import { courseService } from "../../services/api/courseService";
 
 export const useVideoProgress = (selectedCourse, setVideoProgress) => {
   const progressUpdateTimerRef = useRef(null);

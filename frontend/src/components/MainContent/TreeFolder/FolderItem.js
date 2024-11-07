@@ -1,5 +1,6 @@
 import React from "react";
 import { ChevronDown, ChevronRight, Folder } from "lucide-react";
+import ProgressBarFolder from "./ProgressBarFolder";
 
 const FolderItem = ({
   currentPath,
@@ -32,15 +33,10 @@ const FolderItem = ({
             </span>
           </div>
           <div className="ml-6 mr-4 flex items-center gap-2">
-            <div className="flex-grow bg-gray-400 rounded-full h-1.5">
-              <div
-                className="h-1.5 rounded-full bg-blue-600 transition-all duration-300"
-                style={{ width: `${folderProgress}%` }}
-              ></div>
-            </div>
-            <div className="flex-shrink-0 min-w-[40px] text-xs text-gray-500 text-right">
-              {Math.round(folderProgress)}%
-            </div>
+            <ProgressBarFolder
+              progress={folderProgress}
+              showPercentage={true}
+            />
           </div>
         </div>
       </div>

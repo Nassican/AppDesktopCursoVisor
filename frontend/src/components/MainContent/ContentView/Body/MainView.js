@@ -19,9 +19,10 @@ const MainView = ({
   handleVideoPlay,
   handleVideoEnded,
   videoProgress,
+  isLoading,
 }) => {
   if (!selectedContent) {
-    return <EmptyStateView courseInfo={courseInfo} />;
+    return <EmptyStateView courseInfo={courseInfo} isLoading={isLoading} />;
   }
 
   return (

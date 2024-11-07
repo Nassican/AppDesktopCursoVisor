@@ -44,8 +44,18 @@ const LastWatched = ({ lastWatched, courses, onCourseSelect }) => {
                 lastWatched.expandedFolders
               );
             }}
-            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+            className="
+              flex items-center gap-2
+              bg-blue-500 hover:bg-blue-600 
+              text-white font-medium
+              px-6 py-2.5 
+              rounded-lg 
+              transition-all duration-200 
+              focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-opacity-50
+              active:scale-95
+            "
           >
+            <FileVideo size={18} />
             Continuar
           </button>
         </div>

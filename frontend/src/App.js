@@ -1,29 +1,26 @@
 import React, { useState } from "react";
 import Home from "./components/Home/Home";
 import { getFileName, getSectionName } from "./utils/fileUtils";
-import { useFolder } from "./hooks/useFolder";
-import { useFolderProgress } from "./hooks/useFolderProgress";
-import { useCourseData } from "./hooks/useCourseData";
+import { useCourseData } from "./hooks/course/useCourseData";
 import CourseView from "./components/MainContent/ContentView/CourseView";
-import { useVideoProgress } from "./hooks/useVideoProgress";
-import { useWatchedStatus } from "./hooks/useWatchedStatus";
-import { useContentSelection } from "./hooks/useContentSelection";
-import { useVideoHandlers } from "./hooks/useVideoHandlers";
-import { useCourseSelection } from "./hooks/useCourseSelection";
-import { useHomeNavigation } from "./hooks/useHomeNavigation";
+import { useVideoProgress } from "./hooks/video/useVideoProgress";
+import { useWatchedStatus } from "./hooks/video/useWatchedStatus";
+import { useContentSelection } from "./hooks/content/useContentSelection";
+import { useVideoHandlers } from "./hooks/video/useVideoHandlers";
+import { useCourseSelection } from "./hooks/course/useCourseSelection";
+import { useNavigation } from "./hooks/navigation/useNavigation";
 
 const App = () => {
   const [selectedContent, setSelectedContent] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [, setIsVideoPaused] = useState(true);
 
-  // Custom hooks
-  const { expandedFolders, setExpandedFolders, toggleFolder } = useFolder();
   const {
     structure,
     videoHistory,
     videoProgress,
     courseInfo,
+    isLoading,
     setVideoHistory,
     setVideoProgress,
     setCourseInfo,
@@ -36,9 +33,20 @@ const App = () => {
     updateVideoProgressLocally,
   } = useVideoProgress(selectedCourse, setVideoProgress);
 
-  const calculateFolderProgress = useFolderProgress(
+  const {
+    expandedFolders,
+    setExpandedFolders,
+    toggleFolder,
+    calculateFolderProgress,
+    goToHome,
+  } = useNavigation(
     selectedCourse,
-    videoHistory
+    videoHistory,
+    selectedContent,
+    updateVideoProgressToBackend,
+    lastProgressUpdateRef,
+    setSelectedCourse,
+    setSelectedContent
   );
 
   const selectContent = useContentSelection(
@@ -78,20 +86,13 @@ const App = () => {
     setSelectedContent
   );
 
-  const goToHome = useHomeNavigation(
-    selectedContent,
-    updateVideoProgressToBackend,
-    lastProgressUpdateRef,
-    setSelectedCourse,
-    setSelectedContent
-  );
-
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       {!selectedCourse ? (
         <Home onCourseSelect={handleCourseSelect} />
       ) : (
         <CourseView
+          isLoading={isLoading}
           structure={structure}
           selectedCourse={selectedCourse}
           expandedFolders={expandedFolders}

@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { courseService } from "../services/api/courseService";
+import { courseService } from "../../services/api/courseService";
 
 export const useCourses = () => {
   const [courses, setCourses] = useState([]);

@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { fileHistoryService } from "../services/api/fileHistoryService";
+import { fileHistoryService } from "../../services/api/fileHistoryService";
 
 export const useWatchedStatus = (
   selectedCourse,

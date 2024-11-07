@@ -23,6 +23,7 @@ const CourseView = ({
   handleVideoPause,
   handleVideoPlay,
   handleVideoEnded,
+  isLoading,
 }) => {
   return (
     <div className="flex flex-grow overflow-hidden">
@@ -55,6 +56,7 @@ const CourseView = ({
           handleVideoPlay={handleVideoPlay}
           handleVideoEnded={handleVideoEnded}
           videoProgress={videoProgress}
+          isLoading={isLoading}
         />
       </div>
     </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { useCourses } from "../../hooks/useCourses";
-import { useLastWatched } from "../../hooks/useLastWatched";
+import { useCourses } from "../../hooks/course/useCourses";
+import { useLastWatched } from "../../hooks/content/useLastWatched";
 import IconSelector from "./courses/IconSelector";
 import LastWatched from "./body/LastWatched";
 import AboutModal from "../common/AboutModal";

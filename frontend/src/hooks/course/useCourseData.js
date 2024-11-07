@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { courseService } from "../services/api/courseService";
+import { courseService } from "../../services/api/courseService";
 
 export const useCourseData = (selectedCourse) => {
   const [structure, setStructure] = useState(null);
@@ -31,9 +31,11 @@ export const useCourseData = (selectedCourse) => {
         setCourseInfo(info);
         setVideoProgress(progress);
         setStructure(folderStructure);
+        setIsLoading(false);
       } catch (error) {
         setError(error);
         console.error("Error fetching course data:", error);
+        setIsLoading(false);
       } finally {
         setIsLoading(false);
       }

@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { courseService } from "../services/api/courseService";
+import { courseService } from "../../services/api/courseService";
 
 const PROGRESS_UPDATE_INTERVAL = 10000;
 
