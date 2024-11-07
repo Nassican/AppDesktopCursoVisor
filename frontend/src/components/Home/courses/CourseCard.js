@@ -1,7 +1,7 @@
 import React, { memo } from "react";
 import { Folder } from "lucide-react";
 import * as SiIcons from "react-icons/si";
-import ProgressBar from "./ProgressBar";
+import ProgressBar from "./ProgressBarCourse";
 
 const CourseCard = memo(({ course, onIconClick, onCourseSelect }) => {
   const IconComponent =

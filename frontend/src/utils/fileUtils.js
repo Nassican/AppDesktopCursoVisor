@@ -1,3 +1,13 @@
+import {
+  FileVideo,
+  Image,
+  FileTextIcon as FilePdf,
+  FileText,
+  Archive,
+  Link,
+  File,
+} from "lucide-react";
+
 const MAX_FILENAME_LENGTH = 35;
 
 export const getFileName = (path) => {
@@ -97,4 +107,20 @@ export const getSectionName = (selectedContent) => {
   sectionPath.pop(); // Eliminar el nombre del archivo
   const sectionName = sectionPath.pop(); // Obtener el nombre de la carpeta
   return decodeURIComponent(sectionName);
+};
+
+export const getFileIcon = (type) => {
+  const iconMap = {
+    video: <FileVideo size={16} className="text-red-500" />,
+    image: <Image size={16} className="text-green-500" />,
+    pdf: <FilePdf size={16} className="text-blue-500" />,
+    html: <FileText size={16} className="text-green-500" />,
+    text: <FileText size={16} className="text-gray-500" />,
+    epub: <FileText size={16} className="text-purple-500" />, // Agregar esta línea
+    zip: <Archive size={16} className="text-purple-500" />,
+    url: <Link size={16} className="text-blue-400" />,
+    unknown: <File size={16} className="text-gray-400" />,
+  };
+
+  return iconMap[type] || iconMap.unknown;
 };

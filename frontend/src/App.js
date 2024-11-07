@@ -3,14 +3,7 @@ import {
   Folder,
   ChevronRight,
   ChevronDown,
-  FileVideo,
-  FileText,
-  File,
-  FileTextIcon as FilePdf,
   Home as HomeIcon,
-  Image,
-  Archive,
-  Link,
 } from "lucide-react";
 import axios from "axios";
 import { fileHistoryService } from "./services/api/fileHistoryService";
@@ -32,8 +25,10 @@ import {
   truncateFileName,
   customSort,
   getSectionName,
+  getFileIcon,
 } from "./utils/fileUtils";
 import { useFolder } from "./hooks/useFolder";
+import ProgressBar from "./components/MainContent/ProgressBar";
 
 const PROGRESS_UPDATE_INTERVAL = 10000; // 10 seconds
 
@@ -496,14 +491,10 @@ const App = () => {
                     </span>
                   </div>
                   {showProgress && (
-                    <div className="ml-6 mr-4 bg-gray-200 rounded-full h-2 mb-2">
-                      <div
-                        className={`h-2 rounded-full ${
-                          isWatched ? "bg-green-500" : "bg-blue-600"
-                        }`}
-                        style={{ width: `${progressPercentage}%` }}
-                      ></div>
-                    </div>
+                    <ProgressBar
+                      progress={progressPercentage}
+                      isWatched={isWatched}
+                    />
                   )}
                 </div>
               </div>
@@ -511,22 +502,6 @@ const App = () => {
           );
         }
       });
-  };
-
-  const getFileIcon = (type) => {
-    const iconMap = {
-      video: <FileVideo size={16} className="text-red-500" />,
-      image: <Image size={16} className="text-green-500" />,
-      pdf: <FilePdf size={16} className="text-blue-500" />,
-      html: <FileText size={16} className="text-green-500" />,
-      text: <FileText size={16} className="text-gray-500" />,
-      epub: <FileText size={16} className="text-purple-500" />, // Agregar esta línea
-      zip: <Archive size={16} className="text-purple-500" />,
-      url: <Link size={16} className="text-blue-400" />,
-      unknown: <File size={16} className="text-gray-400" />,
-    };
-
-    return iconMap[type] || iconMap.unknown;
   };
 
   return (
