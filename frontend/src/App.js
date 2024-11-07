@@ -1,10 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from "react";
-import {
-  Folder,
-  ChevronRight,
-  ChevronDown,
-  Home as HomeIcon,
-} from "lucide-react";
+import { Folder, Home as HomeIcon } from "lucide-react";
 import axios from "axios";
 import { fileHistoryService } from "./services/api/fileHistoryService";
 import Home from "./components/Home/Home";
@@ -28,7 +23,8 @@ import {
   getFileIcon,
 } from "./utils/fileUtils";
 import { useFolder } from "./hooks/useFolder";
-import ProgressBar from "./components/MainContent/ProgressBar";
+import FolderItem from "./components/MainContent/TreeFolder/FolderItem";
+import FileItem from "./components/MainContent/TreeFolder/FileItem";
 
 const PROGRESS_UPDATE_INTERVAL = 10000; // 10 seconds
 
@@ -236,13 +232,19 @@ const App = () => {
         };
         updateVideoProgressLocally(selectedContent.path, newProgress);
 
-        if (video.currentTime >= video.duration - 0.5) {
+        if (video.currentTime >= video.duration) {
           handleWatchedChange(selectedContent.path, true);
         }
       }
     },
     [selectedContent, handleWatchedChange, updateVideoProgressLocally]
   );
+
+  const handleVideoEnded = useCallback(() => {
+    if (selectedContent) {
+      handleWatchedChange(selectedContent.path, true);
+    }
+  }, [selectedContent, handleWatchedChange]);
 
   const handleVideoPause = useCallback(() => {
     setIsVideoPaused(true);
@@ -401,45 +403,15 @@ const App = () => {
           const folderProgress = calculateFolderProgress(value);
 
           return (
-            <div key={currentPath}>
-              <div className="w-full ">
-                <div
-                  className={`cursor-pointer p-2 hover:bg-gray-100 w-full ${
-                    isExpanded ? "bg-gray-200" : ""
-                  }`}
-                  onClick={() => toggleFolder(currentPath)}
-                >
-                  <div className="flex items-center mb-2">
-                    <div className="flex-shrink-0 w-6">
-                      {isExpanded ? (
-                        <ChevronDown size={16} />
-                      ) : (
-                        <ChevronRight size={16} />
-                      )}
-                    </div>
-                    <Folder
-                      size={16}
-                      className="flex-shrink-0 mr-2 text-blue-500"
-                    />
-                    <span className="flex-grow mr-4" title={key}>
-                      {key}
-                    </span>
-                  </div>
-                  <div className="ml-6 mr-4 flex items-center gap-2">
-                    <div className="flex-grow bg-gray-400 rounded-full h-1.5">
-                      <div
-                        className="h-1.5 rounded-full bg-blue-600 transition-all duration-300"
-                        style={{ width: `${folderProgress}%` }}
-                      ></div>
-                    </div>
-                    <div className="flex-shrink-0 min-w-[40px] text-xs text-gray-500 text-right">
-                      {Math.round(folderProgress)}%
-                    </div>
-                  </div>
-                </div>
-              </div>
-              {isExpanded && <div>{renderTree(value, currentPath)}</div>}
-            </div>
+            <FolderItem
+              currentPath={currentPath}
+              isExpanded={isExpanded}
+              toggleFolder={toggleFolder}
+              folderName={key}
+              folderProgress={folderProgress}
+            >
+              {renderTree(value, currentPath)}
+            </FolderItem>
           );
         } else {
           // Obtener el tipo e icono usando las funciones existentes
@@ -460,45 +432,18 @@ const App = () => {
           const showProgress = ["video", "pdf", "html"].includes(value.type);
 
           return (
-            <div key={currentPath} className="flex flex-col w-full">
-              <div className="hover:bg-gray-100 w-full">
-                <div
-                  className="cursor-pointer p-2 pl-8 pr-2"
-                  onClick={() => {
-                    selectContent(value.type, value.path);
-                  }}
-                >
-                  <div className="flex items-center mb-2">
-                    {React.cloneElement(icon, {
-                      size: 16,
-                      className: `mr-2 ${icon.props.className}`,
-                    })}
-                    {showProgress ? (
-                      <input
-                        type="checkbox"
-                        checked={isWatched}
-                        onChange={(e) =>
-                          handleWatchedChange(filePath, e.target.checked)
-                        }
-                        className="ml-2 mr-2"
-                        onClick={(e) => e.stopPropagation()}
-                      />
-                    ) : (
-                      <div className="ml-4"></div>
-                    )}
-                    <span className="truncate" title={key}>
-                      {truncateFileName(key)}
-                    </span>
-                  </div>
-                  {showProgress && (
-                    <ProgressBar
-                      progress={progressPercentage}
-                      isWatched={isWatched}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
+            <FileItem
+              currentPath={currentPath}
+              icon={icon}
+              showProgress={showProgress}
+              isWatched={isWatched}
+              filePath={filePath}
+              handleWatchedChange={handleWatchedChange}
+              fileName={truncateFileName(key)}
+              progressPercentage={progressPercentage}
+              onSelect={selectContent}
+              value={value}
+            />
           );
         }
       });
@@ -565,6 +510,7 @@ const App = () => {
                           onTimeUpdate={handleVideoTimeUpdate}
                           onPause={handleVideoPause}
                           onPlay={handleVideoPlay}
+                          onEnded={handleVideoEnded}
                           videoProgress={videoProgress}
                         />
                       );

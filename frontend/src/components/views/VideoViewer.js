@@ -5,6 +5,7 @@ const VideoViewer = ({
   onTimeUpdate,
   onPause,
   onPlay,
+  onEnded,
   videoProgress,
 }) => {
   return (
@@ -16,6 +17,7 @@ const VideoViewer = ({
         onTimeUpdate={onTimeUpdate}
         onPause={onPause}
         onPlay={onPlay}
+        onEnded={onEnded}
         key={filePath}
         onLoadedMetadata={(e) => {
           const video = e.target;
