@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import Home from "./components/Home/Home";
 import { getFileName, getSectionName } from "./utils/fileUtils";
 import { useCourseData } from "./hooks/course/useCourseData";
-import CourseView from "./components/MainContent/ContentView/CourseView";
+import CourseView from "./components/MainContent/CourseView";
 import { useVideoProgress } from "./hooks/video/useVideoProgress";
 import { useWatchedStatus } from "./hooks/video/useWatchedStatus";
 import { useContentSelection } from "./hooks/content/useContentSelection";

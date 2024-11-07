@@ -1,8 +1,8 @@
 import React from "react";
-import Sidebar from "./Sidebar/Sidebar";
-import CourseHeader from "./Header/CourseHeader";
-import MainView from "./Body/MainView";
-import TreeRenderer from "../TreeFolder/TreeRenderer";
+import Sidebar from "./ContentView/Sidebar/Sidebar";
+import CourseHeader from "./ContentView/Header/CourseHeader";
+import MainView from "./ContentView/Body/MainView";
+import TreeRenderer from "./TreeFolder/TreeRenderer";
 
 const CourseView = ({
   structure,
