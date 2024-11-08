@@ -1,5 +1,5 @@
 import React from "react";
-import CourseCard from "../Courses/CourseCard";
+import CourseCard from "../courses/CourseCard";
 
 const CourseGrid = ({ courses, onIconClick, onCourseSelect, isLoading }) => {
   if (isLoading) {

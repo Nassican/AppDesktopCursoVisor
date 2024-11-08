@@ -2,7 +2,7 @@ import React from "react";
 import { Folder } from "lucide-react";
 import * as SiIcons from "react-icons/si";
 import LoadingState from "./LoadingState";
-import ProgressBarCourse from "../../../Home/Courses/ProgressBarCourse";
+import ProgressBarCourse from "../../../Home/courses/ProgressBarCourse";
 
 const EmptyStateView = ({ courseInfo, isLoading = false }) => {
   if (isLoading) {

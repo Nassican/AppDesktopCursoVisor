@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useCallback } from "react";
 import { useCourses } from "../../hooks/course/useCourses";
 import { useLastWatched } from "../../hooks/content/useLastWatched";
-import IconSelector from "./Courses/IconSelector";
-import LastWatched from "./Body/LastWatched";
+import IconSelector from "./courses/IconSelector";
+import LastWatched from "./body/LastWatched";
 import AboutModal from "../common/AboutModal";
-import Header from "./Body/HeaderHome";
-import SearchBar from "./Body/SearchBar";
-import CourseGrid from "./Body/CourseGrid";
+import Header from "./body/HeaderHome";
+import SearchBar from "./body/SearchBar";
+import CourseGrid from "./body/CourseGrid";
 
 const Home = ({ onCourseSelect }) => {
   const { courses, isLoading, fetchCourses, updateCourseIcon } = useCourses();
