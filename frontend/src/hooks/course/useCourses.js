@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useCallback } from "react";
-import { courseService } from "../../services/api/courseService";
+import { courseService } from "../../services/api/courses/courseService";
 
 const useCoursesState = () => {
   const [courses, setCourses] = useState([]);

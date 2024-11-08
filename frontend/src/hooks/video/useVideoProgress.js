@@ -1,5 +1,5 @@
 import { useCallback, useRef } from "react";
-import { courseService } from "../../services/api/courseService";
+import { courseProgressService } from "../../services/api/courses/courseProgressService";
 
 export const useVideoProgress = (selectedCourse, setVideoProgress) => {
   const progressUpdateTimerRef = useRef(null);
@@ -9,7 +9,7 @@ export const useVideoProgress = (selectedCourse, setVideoProgress) => {
     async (videoPath, progress) => {
       if (selectedCourse) {
         try {
-          await courseService.updateVideoProgress(
+          await courseProgressService.updateVideoProgress(
             selectedCourse,
             videoPath,
             progress

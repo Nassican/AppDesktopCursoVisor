@@ -1,12 +1,12 @@
 import { useState, useCallback } from "react";
-import { courseService } from "../../services/api/courseService";
+import { lastWatchedService } from "../../services/api/courses/lastWatchedService";
 
 export const useLastWatched = () => {
   const [lastWatched, setLastWatched] = useState(null);
 
   const fetchLastWatched = useCallback(async () => {
     try {
-      const data = await courseService.fetchLastWatched();
+      const data = await lastWatchedService.fetchLastWatched();
       if (data) {
         setLastWatched(data);
       }

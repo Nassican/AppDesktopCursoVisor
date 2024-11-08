@@ -1,6 +1,6 @@
 import { useCallback } from "react";
-import { courseService } from "../../services/api/courseService";
 import { config } from "../../config/environment";
+import { lastWatchedService } from "../../services/api/courses/lastWatchedService";
 
 const PROGRESS_UPDATE_INTERVAL = 10000;
 
@@ -36,7 +36,7 @@ export const useContentSelection = (
           .pop()
           .replace(/\.[^/.]+$/, "");
 
-        courseService.updateLastWatched(
+        lastWatchedService.updateLastWatched(
           selectedCourse,
           normalizedPath,
           videoName,

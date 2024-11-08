@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
-import { courseService } from "../../services/api/courseService";
+import { courseService } from "../../services/api/courses/courseService";
+import { courseProgressService } from "../../services/api/courses/courseProgressService";
+import { courseStructureService } from "../../services/api/courses/courseStructureService";
 
 const useCourseDataState = () => {
   const [structure, setStructure] = useState(null);
@@ -47,10 +49,10 @@ const useCourseDataFetch = (selectedCourse, state) => {
 
       try {
         const [history, info, progress, folderStructure] = await Promise.all([
-          courseService.fetchVideoHistory(selectedCourse),
+          courseStructureService.fetchVideoHistory(selectedCourse),
           courseService.fetchCourseInfo(selectedCourse),
-          courseService.fetchVideoProgress(selectedCourse),
-          courseService.fetchFolderStructure(selectedCourse),
+          courseProgressService.fetchVideoProgress(selectedCourse),
+          courseStructureService.fetchFolderStructure(selectedCourse),
         ]);
 
         setVideoHistory(history);
