@@ -1,4 +1,5 @@
 import { useCallback } from "react";
+import { config } from "../../config/environment";
 
 export const useCourseSelection = (
   setSelectedCourse,
@@ -24,7 +25,7 @@ export const useCourseSelection = (
 
         setSelectedContent({
           type: "video",
-          path: `http://localhost:3001/api/file/${encodeURIComponent(
+          path: `${config.API_URL}/file/${encodeURIComponent(
             `${courseId}/${initialVideoPath}`
           )}`,
         });

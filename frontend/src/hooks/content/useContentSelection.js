@@ -1,5 +1,6 @@
 import { useCallback } from "react";
 import { courseService } from "../../services/api/courseService";
+import { config } from "../../config/environment";
 
 const PROGRESS_UPDATE_INTERVAL = 10000;
 
@@ -22,9 +23,7 @@ export const useContentSelection = (
 
       setSelectedContent({
         type,
-        path: `http://localhost:3001/api/file/${encodeURIComponent(
-          completePath
-        )}`,
+        path: `${config.API_URL}/file/${encodeURIComponent(completePath)}`,
       });
 
       if (progressUpdateTimerRef.current) {

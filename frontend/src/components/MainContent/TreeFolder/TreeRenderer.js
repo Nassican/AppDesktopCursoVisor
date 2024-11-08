@@ -7,6 +7,7 @@ import {
   truncateFileName,
 } from "../../../utils/fileUtils";
 import { customSort } from "../../../utils/fileUtils";
+import { config } from "../../../config/environment";
 
 const TreeRenderer = ({
   node,
@@ -58,7 +59,7 @@ const TreeRenderer = ({
         const icon = getFileIcon(type);
 
         const completePath = `${selectedCourse}/${value.path}`;
-        const filePath = `http://localhost:3001/api/file/${encodeURIComponent(
+        const filePath = `${config.API_URL}/file/${encodeURIComponent(
           completePath
         )}`;
         const progress = videoProgress[filePath];

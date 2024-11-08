@@ -1,14 +1,12 @@
-import axios from "axios";
+import axiosInstance from "./axiosConfig";
 
 const FILE_HISTORY_KEY = "fileHistory";
 
 export const fileHistoryService = {
   async fetchHistory(courseId) {
     try {
-      const response = await axios.get(
-        `http://localhost:3001/api/file-history/${courseId}`
-      );
-      const history = response.data.files || {};
+      const { data } = await axiosInstance.get(`/file-history/${courseId}`);
+      const history = data.files || {};
       localStorage.setItem(
         `${FILE_HISTORY_KEY}_${courseId}`,
         JSON.stringify(history)
@@ -22,16 +20,14 @@ export const fileHistoryService = {
 
   async updateHistory(courseId, filePath, isWatched) {
     try {
-      const history =
-        JSON.parse(localStorage.getItem(`${FILE_HISTORY_KEY}_${courseId}`)) ||
-        {};
+      const history = this.getLocalHistory(courseId);
       history[filePath] = isWatched;
       localStorage.setItem(
         `${FILE_HISTORY_KEY}_${courseId}`,
         JSON.stringify(history)
       );
 
-      await axios.post(`http://localhost:3001/api/file-history/${courseId}`, {
+      await axiosInstance.post(`/file-history/${courseId}`, {
         filePath,
         isWatched,
       });

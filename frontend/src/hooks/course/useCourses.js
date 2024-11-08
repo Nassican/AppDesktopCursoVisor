@@ -1,10 +1,25 @@
-import { useState, useCallback } from "react";
+import { useState } from "react";
+import { useCallback } from "react";
 import { courseService } from "../../services/api/courseService";
 
-export const useCourses = () => {
+const useCoursesState = () => {
   const [courses, setCourses] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+
+  return {
+    courses,
+    setCourses,
+    isLoading,
+    setIsLoading,
+    error,
+    setError,
+  };
+};
+
+export const useCourses = () => {
+  const state = useCoursesState();
+  const { setCourses, setIsLoading, setError } = state;
 
   const fetchCourses = useCallback(async () => {
     setIsLoading(true);
@@ -16,27 +31,28 @@ export const useCourses = () => {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [setCourses, setIsLoading, setError]);
 
-  const updateCourseIcon = useCallback(async (courseId, newIcon) => {
-    try {
-      await courseService.updateCourseIcon(courseId, newIcon);
-      setCourses((prevCourses) =>
-        prevCourses.map((course) =>
-          course.id === courseId ? { ...course, icon: newIcon } : course
-        )
-      );
-      return true;
-    } catch (err) {
-      setError(err);
-      return false;
-    }
-  }, []);
+  const updateCourseIcon = useCallback(
+    async (courseId, newIcon) => {
+      try {
+        await courseService.updateCourseIcon(courseId, newIcon);
+        setCourses((prevCourses) =>
+          prevCourses.map((course) =>
+            course.id === courseId ? { ...course, icon: newIcon } : course
+          )
+        );
+        return true;
+      } catch (err) {
+        setError(err);
+        return false;
+      }
+    },
+    [setCourses, setError]
+  );
 
   return {
-    courses,
-    isLoading,
-    error,
+    ...state,
     fetchCourses,
     updateCourseIcon,
   };

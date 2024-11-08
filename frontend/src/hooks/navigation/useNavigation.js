@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { config } from "../../config/environment";
 
 export const useNavigation = (
   selectedCourse,
@@ -41,7 +42,7 @@ export const useNavigation = (
               value.type &&
               ["video", "pdf", "epub", "html"].includes(value.type)
             ) {
-              const completePath = `http://localhost:3001/api/file/${encodeURIComponent(
+              const completePath = `${config.API_URL}/file/${encodeURIComponent(
                 `${selectedCourse}/${value.path}`
               )}`;
               return {
