@@ -11,6 +11,7 @@ import {
   Plus,
   Minus,
 } from "lucide-react";
+import Loader from "../../../common/Loader";
 
 // Definición de temas del lector
 const lightReaderTheme = {
@@ -397,8 +398,15 @@ const EPUBViewer = ({ filePath }) => {
                 manager: "default",
                 snap: false,
                 spread: spread,
+                allowScriptedContent: true,
+                allowPopups: false,
               }}
               readerStyles={themes[theme].readerTheme}
+              loadingView={
+                <div className="flex items-center justify-center h-full">
+                  <Loader size="large" color="blue" />
+                </div>
+              }
             />
           </div>
         </div>
