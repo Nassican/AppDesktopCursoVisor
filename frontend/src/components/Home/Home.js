@@ -5,7 +5,6 @@ import IconSelector from "./courses/IconSelector";
 import LastWatched from "./body/LastWatched";
 import AboutModal from "../common/AboutModal";
 import Header from "./body/HeaderHome";
-import SearchBar from "./body/SearchBar";
 import CourseGrid from "./body/CourseGrid";
 
 const Home = ({ onCourseSelect }) => {
@@ -55,24 +54,29 @@ const Home = ({ onCourseSelect }) => {
   );
 
   return (
-    <div className="p-8 bg-gray-100">
-      <div className="max-w-screen-xl mx-auto">
-        <div className="flex flex-col">
-          <Header onAboutClick={handleAboutClick} />
-          <SearchBar value={searchTerm} onChange={handleSearchChange} />
-          <LastWatched
-            lastWatched={lastWatched}
-            courses={courses}
+    <div className="min-h-screen bg-gray-100 flex flex-col overflow-y-scroll pr-[calc(100vw-100%)] [&::-webkit-scrollbar]:w-[14px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:border-[4px] [&::-webkit-scrollbar-thumb]:border-solid [&::-webkit-scrollbar-thumb]:border-transparent [&::-webkit-scrollbar-thumb]:bg-clip-padding hover:[&::-webkit-scrollbar-thumb]:bg-gray-400 active:[&::-webkit-scrollbar-thumb]:bg-gray-500">
+      <Header
+        onAboutClick={handleAboutClick}
+        searchValue={searchTerm}
+        onSearchChange={handleSearchChange}
+      />
+      <main className="flex-1 px-8 pb-8 bg-gray-100 pt-24">
+        <div className="max-w-screen-xl mx-auto">
+          <div className="flex flex-col">
+            <LastWatched
+              lastWatched={lastWatched}
+              courses={courses}
+              onCourseSelect={onCourseSelect}
+            />
+          </div>
+          <CourseGrid
+            courses={filteredCourses}
+            onIconClick={handleIconClick}
             onCourseSelect={onCourseSelect}
+            isLoading={isLoading}
           />
         </div>
-        <CourseGrid
-          courses={filteredCourses}
-          onIconClick={handleIconClick}
-          onCourseSelect={onCourseSelect}
-          isLoading={isLoading}
-        />
-      </div>
+      </main>
       <IconSelector
         isOpen={isIconSelectorOpen}
         onClose={() => setIsIconSelectorOpen(false)}
