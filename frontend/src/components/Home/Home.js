@@ -54,13 +54,31 @@ const Home = ({ onCourseSelect }) => {
   );
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col overflow-y-scroll pr-[calc(100vw-100%)] [&::-webkit-scrollbar]:w-[14px] [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:border-[4px] [&::-webkit-scrollbar-thumb]:border-solid [&::-webkit-scrollbar-thumb]:border-transparent [&::-webkit-scrollbar-thumb]:bg-clip-padding hover:[&::-webkit-scrollbar-thumb]:bg-gray-400 active:[&::-webkit-scrollbar-thumb]:bg-gray-500">
+    <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
       <Header
         onAboutClick={handleAboutClick}
         searchValue={searchTerm}
         onSearchChange={handleSearchChange}
       />
-      <main className="flex-1 px-8 pb-8 bg-gray-100 pt-24">
+      <main
+        className="
+        flex-1 
+        px-8 
+        pb-8 
+        bg-gray-100 
+        overflow-y-auto 
+        sm:[&::-webkit-scrollbar]:w-[14px] 
+        [&::-webkit-scrollbar]:w-0
+        sm:[&::-webkit-scrollbar-track]:bg-transparent 
+        sm:[&::-webkit-scrollbar-thumb]:bg-gray-300 
+        sm:[&::-webkit-scrollbar-thumb]:rounded-full 
+        sm:[&::-webkit-scrollbar-thumb]:border-[4px] 
+        sm:[&::-webkit-scrollbar-thumb]:border-solid 
+        sm:[&::-webkit-scrollbar-thumb]:border-transparent 
+        sm:[&::-webkit-scrollbar-thumb]:bg-clip-padding 
+        hover:sm:[&::-webkit-scrollbar-thumb]:bg-gray-400 
+        active:sm:[&::-webkit-scrollbar-thumb]:bg-gray-500"
+      >
         <div className="max-w-screen-xl mx-auto">
           <div className="flex flex-col">
             <LastWatched

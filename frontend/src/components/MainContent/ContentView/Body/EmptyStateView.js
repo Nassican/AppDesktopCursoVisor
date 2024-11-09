@@ -27,13 +27,13 @@ const EmptyStateView = ({ courseInfo, isLoading = false }) => {
                 className="text-blue-500 mb-4 transform transition-transform hover:scale-105"
               />
             )}
-            <h3 className="text-2xl font-bold mb-2 text-gray-800">
+            <h3 className="text-2xl font-bold mb-2 text-gray-800 px-5">
               {courseInfo.name}
             </h3>
-            <p className="text-lg text-gray-600 mb-4">
+            <p className="text-lg text-gray-600 mb-4 px-5">
               Selecciona un archivo para visualizarlo
             </p>
-            <div className="text-lg text-gray-500 w-full">
+            <div className="text-lg text-gray-500 w-full px-5">
               <ProgressBarCourse
                 filesWatched={courseInfo.filesWatched}
                 totalFiles={courseInfo.totalFiles}

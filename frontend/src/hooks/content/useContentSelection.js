@@ -14,6 +14,15 @@ export const useContentSelection = (
 ) => {
   const selectContent = useCallback(
     (type, filePath) => {
+      if (type === null) {
+        if (progressUpdateTimerRef.current) {
+          clearInterval(progressUpdateTimerRef.current);
+          progressUpdateTimerRef.current = null;
+        }
+        setSelectedContent(null);
+        return;
+      }
+
       if (!selectedCourse || !filePath) return;
 
       const normalizedPath = filePath.startsWith("/")

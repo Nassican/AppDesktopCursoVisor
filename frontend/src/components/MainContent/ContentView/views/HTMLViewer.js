@@ -125,7 +125,7 @@ const HTMLViewer = ({ filePath, theme = "light" }) => {
         srcDoc={styledHTML}
         className="w-full h-full border-0"
         style={{ minHeight: "calc(100vh - 12rem)" }}
-        sandbox="allow-same-origin allow-scripts"
+        sandbox="allow-same-origin allow-scripts allow-forms"
       />
     </div>
   );

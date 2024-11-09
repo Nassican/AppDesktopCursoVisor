@@ -21,6 +21,8 @@ const MainView = ({
   videoProgress,
   isLoading,
 }) => {
+  console.log("MainView selectedContent:", selectedContent);
+
   if (!selectedContent) {
     return <EmptyStateView courseInfo={courseInfo} isLoading={isLoading} />;
   }
@@ -62,7 +64,12 @@ const MainView = ({
           case "epub":
             return <EPUBViewer filePath={selectedContent.path} />;
           case "zip":
-            return <ZIPViewer filePath={selectedContent.path} />;
+            return (
+              <ZIPViewer
+                filePath={selectedContent.path}
+                fileName={getFileName(selectedContent.path)}
+              />
+            );
           default:
             return (
               <div className="flex-1 flex items-center justify-center">

@@ -1,24 +1,94 @@
 import React from "react";
-import { Archive, Download } from "lucide-react";
+import { Archive, Download, File, FileText } from "lucide-react";
 
-const ZIPViewer = ({ filePath }) => {
+const ZIPViewer = ({ filePath, fileName }) => {
+  // Función para obtener el icono según la extensión
+  const getFileIcon = (name) => {
+    const ext = name.split(".").pop().toLowerCase();
+    switch (ext) {
+      case "pdf":
+        return <FileText className="text-red-500" size={24} />;
+      case "doc":
+      case "docx":
+        return <FileText className="text-blue-500" size={24} />;
+      case "xls":
+      case "xlsx":
+        return <FileText className="text-green-500" size={24} />;
+      default:
+        return <File className="text-gray-500" size={24} />;
+    }
+  };
+
   return (
-    <div className="flex-1 flex items-center justify-center p-8">
-      <div className="text-center">
-        <Archive size={64} className="mx-auto mb-4 text-purple-500" />
-        <h3 className="text-lg font-medium mb-2">Archivo Comprimido</h3>
-        <p className="text-gray-600 mb-4">
-          Este archivo debe ser descargado para su visualización
-        </p>
-        <a
-          href={filePath}
-          download
-          className="inline-flex items-center px-4 py-2 bg-purple-500 hover:bg-purple-600 
-            text-white rounded-lg transition-colors duration-200 shadow-md hover:shadow-lg"
-        >
-          <Download size={16} className="mr-2" />
-          Descargar ZIP
-        </a>
+    <div className="flex-1 flex items-center justify-center p-6 bg-gradient-to-br">
+      <div className="max-w-xl w-full backdrop-blur-xl bg-white/80 rounded-3xl shadow-2xl p-8 transform transition-all duration-300 hover:shadow-purple-200">
+        {/* Icono principal */}
+        <div className="relative mb-16">
+          <div className="absolute -top-12 left-1/2 -translate-x-1/2">
+            <div className="bg-gradient-to-br from-purple-500 to-indigo-600 rounded-2xl w-24 h-24 flex items-center justify-center shadow-lg border-4 border-white transform transition-transform hover:scale-105 hover:rotate-3">
+              <Archive size={40} className="text-white" />
+            </div>
+          </div>
+        </div>
+
+        {/* Contenido principal */}
+        <div className="space-y-8">
+          {/* Título y descripción */}
+          <div className="text-center space-y-2">
+            <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-600 to-indigo-600 bg-clip-text text-transparent">
+              Archivo ZIP
+            </h3>
+            <p className="text-gray-600">
+              Archivo comprimido listo para descargar
+            </p>
+          </div>
+
+          {/* Información del archivo */}
+          <div className="bg-gradient-to-r from-purple-50 to-indigo-50 rounded-2xl p-6 space-y-4">
+            <div className="flex items-center gap-4 bg-white/90 backdrop-blur-md rounded-xl p-4 shadow-sm border border-purple-100">
+              <div className="p-3 bg-purple-50 rounded-lg">
+                {getFileIcon(fileName)}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="font-medium text-gray-900 truncate">
+                  {fileName || "archivo.zip"}
+                </p>
+                <p className="text-sm text-gray-500">Archivo ZIP</p>
+              </div>
+            </div>
+          </div>
+
+          {/* Botón de descarga */}
+          <div className="flex justify-center pt-4">
+            <a
+              href={filePath}
+              download
+              className="
+                group
+                inline-flex items-center px-8 py-4
+                bg-gradient-to-r from-purple-500 to-indigo-600
+                hover:from-purple-600 hover:to-indigo-700
+                text-white font-medium rounded-2xl
+                transition-all duration-300
+                hover:shadow-lg hover:shadow-purple-200/50
+                active:scale-95
+                relative
+                overflow-hidden
+              "
+            >
+              <span className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
+              <Download size={20} className="mr-2" />
+              <span className="relative text-lg">Descargar archivo</span>
+            </a>
+          </div>
+
+          {/* Nota informativa */}
+          <div className="text-center">
+            <p className="text-gray-500 text-sm">
+              El archivo se descargará automáticamente al hacer clic en el botón
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );

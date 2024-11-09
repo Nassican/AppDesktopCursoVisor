@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Sidebar from "./ContentView/Sidebar/Sidebar";
 import CourseHeader from "./ContentView/Header/CourseHeader";
 import MainView from "./ContentView/Body/MainView";
@@ -25,6 +25,12 @@ const CourseView = ({
   handleVideoEnded,
   isLoading,
 }) => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
   return (
     <div className="flex flex-grow overflow-hidden">
       <Sidebar
@@ -43,9 +49,16 @@ const CourseView = ({
           />
         )}
         goToHome={goToHome}
+        isOpen={isSidebarOpen}
+        onToggle={toggleSidebar}
       />
       <div className="w-full p-4 flex flex-col h-[calc(100vh)]">
-        <CourseHeader courseInfo={courseInfo} />
+        <CourseHeader
+          courseInfo={courseInfo}
+          onToggleSidebar={toggleSidebar}
+          isSidebarOpen={isSidebarOpen}
+          onHomeClick={() => selectContent(null, null)}
+        />
         <MainView
           selectedContent={selectedContent}
           courseInfo={courseInfo}
