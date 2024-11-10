@@ -7,7 +7,7 @@ import AboutModal from "../common/AboutModal";
 import Header from "./body/HeaderHome";
 import CourseGrid from "./body/CourseGrid";
 
-const Home = ({ onCourseSelect }) => {
+const Home = React.memo(({ onCourseSelect }) => {
   const { courses, isLoading, fetchCourses, updateCourseIcon } = useCourses();
   const { lastWatched, fetchLastWatched } = useLastWatched();
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -15,10 +15,15 @@ const Home = ({ onCourseSelect }) => {
   const [isAboutModalOpen, setIsAboutModalOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Efecto inicial memoizado
   useEffect(() => {
-    Promise.all([fetchCourses(), fetchLastWatched()]);
-  }, [fetchCourses, fetchLastWatched]);
+    const fetchData = async () => {
+      await Promise.all([fetchCourses(), fetchLastWatched()]);
+    };
+    fetchData();
+  }, [fetchCourses, fetchLastWatched]); // Removemos las dependencias ya que las funciones son estables
 
+  // Funciones de manejo memoizadas
   const handleIconClick = useCallback((course) => {
     setSelectedCourse(course);
     setIsIconSelectorOpen(true);
@@ -26,7 +31,10 @@ const Home = ({ onCourseSelect }) => {
 
   const handleIconChange = useCallback(
     async (newIcon) => {
-      if (await updateCourseIcon(selectedCourse.id, newIcon)) {
+      if (
+        selectedCourse &&
+        (await updateCourseIcon(selectedCourse.id, newIcon))
+      ) {
         setIsIconSelectorOpen(false);
       }
     },
@@ -34,7 +42,7 @@ const Home = ({ onCourseSelect }) => {
   );
 
   const handleSearchChange = useCallback((e) => {
-    setSearchTerm(e.target.value);
+    setSearchTerm(e.target.value.toLowerCase());
   }, []);
 
   const handleAboutClick = useCallback(() => {
@@ -45,30 +53,54 @@ const Home = ({ onCourseSelect }) => {
     setIsAboutModalOpen(false);
   }, []);
 
+  const handleIconSelectorClose = useCallback(() => {
+    setIsIconSelectorOpen(false);
+  }, []);
+
+  // Memoización de cursos filtrados
   const filteredCourses = React.useMemo(
     () =>
       courses.filter((course) =>
-        course.name.toLowerCase().includes(searchTerm.toLowerCase())
+        course.name.toLowerCase().includes(searchTerm)
       ),
     [courses, searchTerm]
   );
 
+  // Props memoizadas para componentes hijos
+  const headerProps = React.useMemo(
+    () => ({
+      onAboutClick: handleAboutClick,
+      searchValue: searchTerm,
+      onSearchChange: handleSearchChange,
+    }),
+    [handleAboutClick, searchTerm, handleSearchChange]
+  );
+
+  const lastWatchedProps = React.useMemo(
+    () => ({
+      lastWatched,
+      courses,
+      onCourseSelect,
+    }),
+    [lastWatched, courses, onCourseSelect]
+  );
+
+  const courseGridProps = React.useMemo(
+    () => ({
+      courses: filteredCourses,
+      onIconClick: handleIconClick,
+      onCourseSelect,
+      isLoading,
+    }),
+    [filteredCourses, handleIconClick, onCourseSelect, isLoading]
+  );
+
   return (
     <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
-      <Header
-        onAboutClick={handleAboutClick}
-        searchValue={searchTerm}
-        onSearchChange={handleSearchChange}
-      />
+      <Header {...headerProps} />
       <main
-        className="
-        flex-1 
-        px-8 
-        pb-8 
-        bg-gray-100 
-        overflow-y-auto 
-        sm:[&::-webkit-scrollbar]:w-[14px] 
-        [&::-webkit-scrollbar]:w-0
+        className="flex-1 px-8 pb-8 bg-gray-100 overflow-y-auto 
+        sm:[&::-webkit-scrollbar]:w-[14px] [&::-webkit-scrollbar]:w-0
         sm:[&::-webkit-scrollbar-track]:bg-transparent 
         sm:[&::-webkit-scrollbar-thumb]:bg-gray-300 
         sm:[&::-webkit-scrollbar-thumb]:rounded-full 
@@ -81,28 +113,21 @@ const Home = ({ onCourseSelect }) => {
       >
         <div className="max-w-screen-xl mx-auto">
           <div className="flex flex-col">
-            <LastWatched
-              lastWatched={lastWatched}
-              courses={courses}
-              onCourseSelect={onCourseSelect}
-            />
+            <LastWatched {...lastWatchedProps} />
           </div>
-          <CourseGrid
-            courses={filteredCourses}
-            onIconClick={handleIconClick}
-            onCourseSelect={onCourseSelect}
-            isLoading={isLoading}
-          />
+          <CourseGrid {...courseGridProps} />
         </div>
       </main>
       <IconSelector
         isOpen={isIconSelectorOpen}
-        onClose={() => setIsIconSelectorOpen(false)}
+        onClose={handleIconSelectorClose}
         onSelectIcon={handleIconChange}
       />
       <AboutModal isOpen={isAboutModalOpen} onClose={handleAboutClose} />
     </div>
   );
-};
+});
 
-export default React.memo(Home);
+Home.displayName = "Home";
+
+export default Home;
