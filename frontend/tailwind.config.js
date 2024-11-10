@@ -10,7 +10,7 @@ module.exports = {
         },
       },
       animation: {
-        shine: "shine 2s infinite linear",
+        shine: "shine 4s infinite linear",
       },
     },
   },

@@ -83,7 +83,7 @@ const Sidebar = ({ structure, renderTree, goToHome, isOpen, onToggle }) => {
       {/* Overlay para móviles */}
       {isOpen && (
         <div
-          className="md:hidden fixed inset-0 bg-black/20 backdrop-blur-sm -z-10"
+          className="md:hidden fixed inset-0 backdrop-blur-sm -z-10"
           onClick={onToggle}
         />
       )}
