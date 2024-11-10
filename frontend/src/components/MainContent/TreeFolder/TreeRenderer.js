@@ -1,12 +1,12 @@
-import React from "react";
+import React, { useMemo, useCallback } from "react";
 import FolderItem from "./FolderItem";
 import FileItem from "./FileItem";
 import {
   getFileType,
   getFileIcon,
   truncateFileName,
+  customSort,
 } from "../../../utils/fileUtils";
-import { customSort } from "../../../utils/fileUtils";
 import { config } from "../../../config/environment";
 
 const TreeRenderer = ({
@@ -21,73 +21,91 @@ const TreeRenderer = ({
   selectContent,
   calculateFolderProgress,
 }) => {
-  return Object.entries(node)
-    .sort(([a], [b]) => customSort(a, b))
-    .map(([key, value]) => {
-      const currentPath = path ? `${path}/${key}` : key;
-      const isFolder = typeof value === "object" && !value.type;
+  // Memoizar la función de procesamiento de archivos
+  const processFile = useCallback(
+    (key, value, currentPath) => {
+      const type = getFileType(key);
+      const icon = getFileIcon(type);
+      const completePath = `${selectedCourse}/${value.path}`;
+      const filePath = `${config.API_URL}/file/${encodeURIComponent(
+        completePath
+      )}`;
 
-      if (isFolder) {
-        const isExpanded = expandedFolders[currentPath];
-        const folderProgress = calculateFolderProgress(value);
+      const progress = videoProgress[filePath];
+      const isWatched = videoHistory[filePath] || false;
+      const progressPercentage = isWatched
+        ? 100
+        : progress
+        ? (progress.currentTime / progress.duration) * 100
+        : 0;
 
-        return (
-          <FolderItem
-            key={currentPath}
-            currentPath={currentPath}
-            isExpanded={isExpanded}
-            toggleFolder={toggleFolder}
-            folderName={key}
-            folderProgress={folderProgress}
-          >
-            <TreeRenderer
-              node={value}
-              path={currentPath}
-              selectedCourse={selectedCourse}
-              expandedFolders={expandedFolders}
-              toggleFolder={toggleFolder}
-              videoProgress={videoProgress}
-              videoHistory={videoHistory}
+      return {
+        icon,
+        filePath,
+        isWatched,
+        progressPercentage,
+        showProgress: ["video", "pdf", "html"].includes(value.type),
+        fileName: truncateFileName(key),
+      };
+    },
+    [selectedCourse, videoProgress, videoHistory]
+  );
+
+  // Memoizar el árbol completo
+  const renderedTree = useMemo(() => {
+    const renderNode = (node, currentPath = "") => {
+      return Object.entries(node)
+        .sort(([a], [b]) => customSort(a, b))
+        .map(([key, value]) => {
+          const nodePath = currentPath ? `${currentPath}/${key}` : key;
+          const isFolder = typeof value === "object" && !value.type;
+
+          if (isFolder) {
+            const isExpanded = expandedFolders[nodePath];
+            const folderProgress = calculateFolderProgress(value);
+
+            return (
+              <FolderItem
+                key={nodePath}
+                currentPath={nodePath}
+                isExpanded={isExpanded}
+                toggleFolder={toggleFolder}
+                folderName={key}
+                folderProgress={folderProgress}
+              >
+                {isExpanded && renderNode(value, nodePath)}
+              </FolderItem>
+            );
+          }
+
+          const fileProps = processFile(key, value, nodePath);
+
+          return (
+            <FileItem
+              key={nodePath}
+              currentPath={nodePath}
+              {...fileProps}
               handleWatchedChange={handleWatchedChange}
-              selectContent={selectContent}
-              calculateFolderProgress={calculateFolderProgress}
+              onSelect={selectContent}
+              value={value}
             />
-          </FolderItem>
-        );
-      } else {
-        const type = getFileType(key);
-        const icon = getFileIcon(type);
+          );
+        });
+    };
 
-        const completePath = `${selectedCourse}/${value.path}`;
-        const filePath = `${config.API_URL}/file/${encodeURIComponent(
-          completePath
-        )}`;
-        const progress = videoProgress[filePath];
-        const isWatched = videoHistory[filePath] || false;
-        const progressPercentage = isWatched
-          ? 100
-          : progress
-          ? (progress.currentTime / progress.duration) * 100
-          : 0;
-        const showProgress = ["video", "pdf", "html"].includes(value.type);
+    return renderNode(node, path);
+  }, [
+    node,
+    path,
+    expandedFolders,
+    toggleFolder,
+    calculateFolderProgress,
+    processFile,
+    handleWatchedChange,
+    selectContent,
+  ]);
 
-        return (
-          <FileItem
-            key={currentPath}
-            currentPath={currentPath}
-            icon={icon}
-            showProgress={showProgress}
-            isWatched={isWatched}
-            filePath={filePath}
-            handleWatchedChange={handleWatchedChange}
-            fileName={truncateFileName(key)}
-            progressPercentage={progressPercentage}
-            onSelect={selectContent}
-            value={value}
-          />
-        );
-      }
-    });
+  return renderedTree;
 };
 
-export default TreeRenderer;
+export default React.memo(TreeRenderer);

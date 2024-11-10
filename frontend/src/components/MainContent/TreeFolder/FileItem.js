@@ -14,10 +14,10 @@ const FileItem = ({
   value,
 }) => {
   return (
-    <div className="flex flex-col w-full">
-      <div className="hover:bg-gray-100 w-full">
+    <div className="flex flex-col w-full pl-2">
+      <div className="hover:bg-gray-100 w-full rounded-lg">
         <div
-          className="cursor-pointer p-2 pl-8 pr-2"
+          className="cursor-pointer p-2 pl-5"
           onClick={() => onSelect(value.type, value.path)}
         >
           <div className="flex items-center mb-2">

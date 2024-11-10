@@ -57,7 +57,7 @@ const CourseView = ({
           courseInfo={courseInfo}
           onToggleSidebar={toggleSidebar}
           isSidebarOpen={isSidebarOpen}
-          onHomeClick={() => selectContent(null, null)}
+          onHomeClick={() => selectContent(null)}
         />
         <MainView
           selectedContent={selectedContent}

@@ -21,7 +21,7 @@ const MainView = ({
   videoProgress,
   isLoading,
 }) => {
-  console.log("MainView selectedContent:", selectedContent);
+  //console.log("MainView selectedContent:", selectedContent);
 
   if (!selectedContent) {
     return <EmptyStateView courseInfo={courseInfo} isLoading={isLoading} />;
