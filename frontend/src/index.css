@@ -25,15 +25,15 @@
 }
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb {
-  background: #1e293b;
+  background: #475569; /* Gris más claro para mejor visibilidad */
 }
 
 .dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+  background: #64748b; /* Gris aún más claro al hover */
 }
 
-.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-  background: #334155;
+.dark .custom-scrollbar {
+  scrollbar-color: #475569 transparent; /* Actualizar color para Firefox */
 }
 
 /* Ocultar scrollbar cuando no está en uso */

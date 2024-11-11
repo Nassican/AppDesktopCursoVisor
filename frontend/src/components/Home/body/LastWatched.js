@@ -38,7 +38,7 @@ const LastWatched = ({ lastWatched, courses, onCourseSelect }) => {
               />
             </div>
             <div className="min-w-0 flex-1 space-y-1">
-              <h3 className="font-medium text-gray-800 dark:text-gray-100 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+              <h3 className="font-medium text-gray-800 dark:text-gray-100 truncate group-hover:text-blue-600 dark:group-hover:text-blue-400 ">
                 {videoNameDisplay}
               </h3>
               <div className="flex items-center text-sm text-gray-500 dark:text-gray-400 gap-2">

@@ -66,7 +66,7 @@ const TextViewer = ({ filePath }) => {
         </div>
 
         {/* Content */}
-        <div className="p-2 overflow-auto max-h-[calc(100vh-12rem)]">
+        <div className="p-2 overflow-auto max-h-[calc(100vh-12rem)] custom-scrollbar overscroll-contain">
           <pre
             className="
               whitespace-pre-wrap 

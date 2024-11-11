@@ -46,8 +46,7 @@ const SearchBar = ({ value, onChange }) => {
             isFocused
               ? "border-blue-500/50 shadow-lg shadow-blue-500/10 dark:shadow-blue-500/10"
               : "border-gray-100 shadow-sm dark:border-slate-700"
-          }
-          transition-all duration-300 ease-in-out
+          } ease-in-out
           hover:border-blue-400/50 dark:hover:border-blue-400/50
         `}
       >

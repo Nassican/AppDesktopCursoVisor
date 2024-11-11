@@ -32,7 +32,7 @@ const CourseView = ({
   };
 
   return (
-    <div className="flex flex-grow overflow-hidden">
+    <div className="flex flex-grow overflow-hidden ">
       <Sidebar
         structure={structure}
         renderTree={() => (

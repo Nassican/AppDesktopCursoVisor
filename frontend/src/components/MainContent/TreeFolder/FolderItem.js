@@ -57,7 +57,7 @@ const FolderItem = ({
         </div>
       </div>
       {isExpanded && (
-        <div className="ml-4 pl-0 border-l-2 border-blue-100 dark:border-blue-900 mt-2">
+        <div className="ml-4 pl-0 border-l-2 border-blue-300 dark:border-blue-400 mt-2">
           {children}
         </div>
       )}
