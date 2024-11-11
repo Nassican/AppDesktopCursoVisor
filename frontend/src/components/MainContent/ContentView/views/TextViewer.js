@@ -36,20 +36,20 @@ const TextViewer = ({ filePath }) => {
 
   return (
     <div className="flex-1 flex flex-col bg-gradient-to-b">
-      <div className="bg-white/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 flex-1 overflow-hidden">
+      <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-2xl shadow-lg border border-white/50 dark:border-gray-700 flex-1 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
           <div className="flex items-center gap-3">
-            <div className="bg-blue-500/10 p-2 rounded-lg">
-              <FileText className="w-5 h-5 text-blue-600" />
+            <div className="bg-blue-500/10 dark:bg-blue-600/10 p-2 rounded-lg">
+              <FileText className="w-5 h-5 text-blue-600 dark:text-blue-100" />
             </div>
-            <h2 className="text-lg font-semibold text-gray-700">
+            <h2 className="text-lg font-semibold text-gray-700 dark:text-gray-300">
               Archivo de Texto
             </h2>
           </div>
           <button
             onClick={handleCopy}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition-colors text-gray-600 text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors text-gray-600 dark:text-gray-300 text-sm font-medium"
           >
             {isCopied ? (
               <>
@@ -72,16 +72,16 @@ const TextViewer = ({ filePath }) => {
               whitespace-pre-wrap 
               font-mono 
               text-sm 
-              text-gray-700 
-              bg-gray-50/50 
+              text-gray-700 dark:text-gray-300 
+              bg-gray-50/50 dark:bg-gray-900/50 
               p-4 
               rounded-xl 
               border 
-              border-gray-100
+              border-gray-100 dark:border-gray-700
               leading-relaxed
               [&::-webkit-scrollbar]:w-2
               [&::-webkit-scrollbar-track]:bg-transparent
-              [&::-webkit-scrollbar-thumb]:bg-gray-200
+              [&::-webkit-scrollbar-thumb]:bg-gray-200 dark:bg-gray-800
               [&::-webkit-scrollbar-thumb]:rounded-full
             "
           >

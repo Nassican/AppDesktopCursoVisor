@@ -9,11 +9,11 @@ const ErrorGridCourses = () => {
 
   return (
     <div className="flex-1 flex items-center justify-center p-6 min-h-[calc(100vh-200px)]">
-      <div className="max-w-xl w-full backdrop-blur-xl bg-white dark:bg-slate-700 rounded-3xl shadow-2xl p-8 transform transition-all duration-300">
+      <div className="max-w-xl w-full backdrop-blur-xl bg-white dark:bg-gray-800 rounded-3xl shadow-2xl p-8 transform transition-all duration-300">
         <div className="text-center space-y-8">
           <div className="flex justify-center">
-            <div className="bg-red-50 p-4 rounded-full">
-              <AlertCircle className="w-16 h-16 text-red-500" />
+            <div className="bg-red-50 dark:bg-red-500/50 p-4 rounded-full">
+              <AlertCircle className="w-16 h-16 text-red-500 dark:text-red-50" />
             </div>
           </div>
           <div className="space-y-4">
@@ -30,7 +30,7 @@ const ErrorGridCourses = () => {
             startColor="blue"
             endColor="indigo"
             icon={RefreshCcw}
-            label="Intentar nuevamente"
+            label="Abrir enlace"
           />
         </div>
       </div>

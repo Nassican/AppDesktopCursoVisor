@@ -64,7 +64,7 @@ const LastWatched = ({ lastWatched, courses, onCourseSelect }) => {
             }}
             size="sm"
             startColor="blue"
-            endColor="blue"
+            endColor="indigo"
             icon={FileVideo}
             label="Continuar"
           />

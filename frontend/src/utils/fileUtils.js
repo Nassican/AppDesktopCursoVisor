@@ -111,15 +111,17 @@ export const getSectionName = (selectedContent) => {
 
 export const getFileIcon = (type) => {
   const iconMap = {
-    video: <FileVideo size={16} className="text-red-500" />,
-    image: <Image size={16} className="text-green-500" />,
-    pdf: <FilePdf size={16} className="text-blue-500" />,
-    html: <FileText size={16} className="text-green-500" />,
-    text: <FileText size={16} className="text-gray-500" />,
-    epub: <FileText size={16} className="text-purple-500" />, // Agregar esta línea
-    zip: <Archive size={16} className="text-purple-500" />,
-    url: <Link size={16} className="text-blue-400" />,
-    unknown: <File size={16} className="text-gray-400" />,
+    video: <FileVideo size={16} className="text-red-500 dark:text-red-400" />,
+    image: <Image size={16} className="text-green-500 dark:text-green-400" />,
+    pdf: <FilePdf size={16} className="text-blue-500 dark:text-blue-400" />,
+    html: <FileText size={16} className="text-green-500 dark:text-green-400" />,
+    text: <FileText size={16} className="text-gray-500 dark:text-gray-400" />,
+    epub: (
+      <FileText size={16} className="text-purple-500 dark:text-purple-400" />
+    ), // Agregar esta línea
+    zip: <Archive size={16} className="text-purple-500 dark:text-purple-400" />,
+    url: <Link size={16} className="text-blue-400 dark:text-blue-300" />,
+    unknown: <File size={16} className="text-gray-400 dark:text-gray-300" />,
   };
 
   return iconMap[type] || iconMap.unknown;

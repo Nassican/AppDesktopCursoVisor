@@ -42,13 +42,13 @@ const GradientButton = ({
       className={`
         group
         inline-flex items-center ${sizeClasses[size]}
-        bg-gradient-to-r from-${startColor}-500 to-${endColor}-600 
+        bg-gradient-to-r from-${startColor}-500 to-${endColor}-600
         hover:from-${startColor}-600 hover:to-${endColor}-700
-        text-white font-medium rounded-xl
+        text-white dark:text-white font-medium rounded-xl
         transition-all duration-300
         hover:shadow-lg
         active:scale-95
-        relative text-
+        relative
         overflow-hidden
       `}
     >

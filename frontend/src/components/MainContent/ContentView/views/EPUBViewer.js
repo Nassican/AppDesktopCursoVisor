@@ -365,7 +365,7 @@ const EPUBViewer = ({ filePath }) => {
   };
 
   return (
-    <div className="flex-1 bg-white rounded-lg overflow-hidden flex flex-col">
+    <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg overflow-hidden flex flex-col">
       <div className="h-full flex flex-col">
         {renderControls()}
 

@@ -115,7 +115,7 @@ const Home = React.memo(({ onCourseSelect }) => {
       >
         <div className="max-w-screen-xl mx-auto">
           <div className="flex flex-col">
-            <LastWatched {...lastWatchedProps} />
+            {courses.length > 0 && <LastWatched {...lastWatchedProps} />}
           </div>
           <CourseGrid {...courseGridProps} />
         </div>

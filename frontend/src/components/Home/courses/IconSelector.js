@@ -52,17 +52,17 @@ const IconSelector = ({ isOpen, onClose, onSelectIcon }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white p-8 rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[80vh] flex flex-col">
+      <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl max-w-4xl w-full mx-4 max-h-[80vh] flex flex-col">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">
+          <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-200">
             Selecciona un icono
           </h2>
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+            className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-full transition-colors"
             aria-label="Cerrar selector de iconos"
           >
-            <X size={24} className="text-gray-500" />
+            <X size={24} className="text-gray-500 dark:text-gray-400" />
           </button>
         </div>
 
@@ -70,15 +70,16 @@ const IconSelector = ({ isOpen, onClose, onSelectIcon }) => {
           <div
             className={`
             relative flex items-center
-            bg-white/80 backdrop-blur-lg
+            bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg
             rounded-2xl
             border-2 ${
               searchTerm
                 ? "border-blue-500/50 shadow-lg shadow-blue-500/10"
-                : "border-gray-100 shadow-sm"
+                : "border-gray-100 dark:border-gray-700 shadow-sm"
             }
             transition-all duration-300 ease-in-out
             hover:border-blue-400/50
+            dark:hover:border-blue-400/50
           `}
           >
             <div className="pl-4">
@@ -86,8 +87,13 @@ const IconSelector = ({ isOpen, onClose, onSelectIcon }) => {
                 className={`
                 h-5 w-5
                 transition-all duration-300
-                ${searchTerm ? "text-blue-500 scale-110" : "text-gray-400"}
+                ${
+                  searchTerm
+                    ? "text-blue-500 scale-110"
+                    : "text-gray-400 dark:text-gray-500"
+                }
                 group-hover:text-blue-400
+                dark:group-hover:text-blue-400
               `}
               />
             </div>
@@ -95,7 +101,7 @@ const IconSelector = ({ isOpen, onClose, onSelectIcon }) => {
             <input
               type="text"
               placeholder="Buscar icono..."
-              className="w-full py-3.5 px-3 bg-transparent text-gray-700 placeholder-gray-400 focus:outline-offset-0 focus:outline-none transition-all text-[15px]"
+              className="w-full py-3.5 px-3 bg-transparent text-gray-700 dark:text-gray-300 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-offset-0 focus:outline-none transition-all text-[15px]"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               disabled={isLoading}
@@ -104,7 +110,7 @@ const IconSelector = ({ isOpen, onClose, onSelectIcon }) => {
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm("")}
-                className="pr-4 pl-2 text-gray-400 hover:text-gray-600 focus:outline-none transition-all duration-300 hover:scale-110"
+                className="pr-4 pl-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-400 focus:outline-none transition-all duration-300 hover:scale-110"
               >
                 <X className="h-5 w-5" />
               </button>
@@ -115,8 +121,10 @@ const IconSelector = ({ isOpen, onClose, onSelectIcon }) => {
         <div className="overflow-y-auto flex-grow custom-scrollbar">
           {isLoading ? (
             <div className="flex flex-col items-center justify-center py-12">
-              <Loader className="w-8 h-8 text-blue-500 animate-spin" />
-              <p className="mt-4 text-gray-600">Cargando iconos...</p>
+              <Loader
+                className="w-8 h-8 text-blue-500 dark:text-blue-400 animate-spin"
+                message="Cargando iconos..."
+              />
             </div>
           ) : filteredIcons.length > 0 ? (
             <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-4">
@@ -130,19 +138,25 @@ const IconSelector = ({ isOpen, onClose, onSelectIcon }) => {
                     className={`p-4 rounded-lg flex flex-col items-center justify-center gap-2 transition-all
                       ${
                         isSelected
-                          ? "bg-blue-50 ring-2 ring-blue-500"
-                          : "hover:bg-gray-50"
+                          ? "bg-blue-50 ring-2 ring-blue-500 dark:ring-blue-400"
+                          : "hover:bg-gray-50 dark:hover:bg-gray-700"
                       }`}
                   >
                     <IconComponent
                       size={32}
                       className={`${
-                        isSelected ? "text-blue-500" : "text-gray-700"
+                        isSelected
+                          ? "text-blue-500 dark:text-blue-400"
+                          : "text-gray-700 dark:text-gray-300"
                       }`}
                     />
                     <span
                       className={`text-xs font-medium truncate w-full text-center
-                        ${isSelected ? "text-blue-500" : "text-gray-600"}`}
+                        ${
+                          isSelected
+                            ? "text-blue-500 dark:text-blue-400"
+                            : "text-gray-600 dark:text-gray-400"
+                        }`}
                     >
                       {iconName.replace("Si", "")}
                     </span>
@@ -151,7 +165,7 @@ const IconSelector = ({ isOpen, onClose, onSelectIcon }) => {
               })}
             </div>
           ) : (
-            <div className="flex flex-col items-center justify-center py-12 text-gray-500">
+            <div className="flex flex-col items-center justify-center py-12 text-gray-500 dark:text-gray-400">
               <p className="text-lg font-medium">No se encontraron iconos</p>
               <p className="text-sm">Intenta con otros términos de búsqueda</p>
             </div>

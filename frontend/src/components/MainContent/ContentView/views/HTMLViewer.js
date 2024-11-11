@@ -119,7 +119,7 @@ const HTMLViewer = ({ filePath, theme = "light" }) => {
   `;
 
   return (
-    <div className="flex-1 bg-white rounded-lg overflow-hidden">
+    <div className="flex-1 bg-white dark:bg-gray-800 rounded-lg overflow-hidden">
       <iframe
         title="Contenido HTML"
         srcDoc={styledHTML}
