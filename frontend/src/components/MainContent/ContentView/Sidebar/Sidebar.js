@@ -1,5 +1,5 @@
 import React from "react";
-import { Home as HomeIcon, ChevronLeft, ArrowLeft } from "lucide-react";
+import { Home as HomeIcon, ArrowLeft } from "lucide-react";
 import Loader from "../../../common/Loader";
 
 const Sidebar = ({ structure, renderTree, goToHome, isOpen, onToggle }) => {
