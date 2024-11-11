@@ -24,7 +24,7 @@ function Header({ onAboutClick, searchValue, onSearchChange }) {
           {/* Fila superior: Título y botón de info */}
           <div className="flex flex-col sm:flex-row justify-between items-center w-full">
             <div className="flex items-center gap-3 w-full sm:w-auto mb-4 sm:mb-0 justify-between sm:justify-start">
-              <div className="bg-blue-900 dark:bg-blue-600 p-2.5 rounded-lg hidden sm:block">
+              <div className="bg-blue-900 dark:bg-blue-700 p-2.5 rounded-lg hidden sm:block">
                 <GraduationCap className="text-blue-50 w-5 h-5" />
               </div>
 
