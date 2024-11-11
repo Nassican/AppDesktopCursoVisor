@@ -1,5 +1,6 @@
 import React from "react";
 import { Archive, Download, File, FileText } from "lucide-react";
+import GradientButton from "../../../common/GradientButton";
 
 const ZIPViewer = ({ filePath, fileName }) => {
   // Función para obtener el icono según la extensión
@@ -60,26 +61,14 @@ const ZIPViewer = ({ filePath, fileName }) => {
 
           {/* Botón de descarga */}
           <div className="flex justify-center pt-4">
-            <a
+            <GradientButton
               href={filePath}
-              download
-              className="
-                group
-                inline-flex items-center px-8 py-4
-                bg-gradient-to-r from-purple-500 to-indigo-600
-                hover:from-purple-600 hover:to-indigo-700
-                text-white font-medium rounded-2xl
-                transition-all duration-300
-                hover:shadow-lg hover:shadow-purple-200/50
-                active:scale-95
-                relative
-                overflow-hidden
-              "
-            >
-              <span className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-              <Download size={20} className="mr-2" />
-              <span className="relative text-lg">Descargar archivo</span>
-            </a>
+              startColor="purple"
+              endColor="indigo"
+              icon={Download}
+              label="Descargar archivo"
+              download={true}
+            />
           </div>
 
           {/* Nota informativa */}

@@ -8,7 +8,8 @@ import Header from "./body/HeaderHome";
 import CourseGrid from "./body/CourseGrid";
 
 const Home = React.memo(({ onCourseSelect }) => {
-  const { courses, isLoading, fetchCourses, updateCourseIcon } = useCourses();
+  const { courses, isLoading, fetchCourses, error, updateCourseIcon } =
+    useCourses();
   const { lastWatched, fetchLastWatched } = useLastWatched();
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [isIconSelectorOpen, setIsIconSelectorOpen] = useState(false);
@@ -91,25 +92,26 @@ const Home = React.memo(({ onCourseSelect }) => {
       onIconClick: handleIconClick,
       onCourseSelect,
       isLoading,
+      error,
     }),
-    [filteredCourses, handleIconClick, onCourseSelect, isLoading]
+    [filteredCourses, handleIconClick, onCourseSelect, isLoading, error]
   );
 
   return (
-    <div className="h-screen bg-gray-100 flex flex-col overflow-hidden">
+    <div className="h-screen bg-gray-100 dark:bg-slate-800 flex flex-col overflow-hidden">
       <Header {...headerProps} />
       <main
-        className="flex-1 px-8 pb-8 bg-gray-100 overflow-y-auto 
+        className="flex-1 px-8 pb-8 bg-gray-100 dark:bg-slate-800 overflow-y-auto 
         sm:[&::-webkit-scrollbar]:w-[14px] [&::-webkit-scrollbar]:w-0
         sm:[&::-webkit-scrollbar-track]:bg-transparent 
-        sm:[&::-webkit-scrollbar-thumb]:bg-gray-300 
+        sm:[&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700
         sm:[&::-webkit-scrollbar-thumb]:rounded-full 
         sm:[&::-webkit-scrollbar-thumb]:border-[4px] 
         sm:[&::-webkit-scrollbar-thumb]:border-solid 
         sm:[&::-webkit-scrollbar-thumb]:border-transparent 
         sm:[&::-webkit-scrollbar-thumb]:bg-clip-padding 
-        hover:sm:[&::-webkit-scrollbar-thumb]:bg-gray-400 
-        active:sm:[&::-webkit-scrollbar-thumb]:bg-gray-500"
+        hover:sm:[&::-webkit-scrollbar-thumb]:bg-gray-400 dark:hover:sm:[&::-webkit-scrollbar-thumb]:bg-slate-600
+        active:sm:[&::-webkit-scrollbar-thumb]:bg-gray-500 dark:active:sm:[&::-webkit-scrollbar-thumb]:bg-slate-500"
       >
         <div className="max-w-screen-xl mx-auto">
           <div className="flex flex-col">

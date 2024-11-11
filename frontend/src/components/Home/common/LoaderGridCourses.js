@@ -3,7 +3,7 @@ import { Folder } from "lucide-react";
 
 const LoaderGridCourses = () => {
   return (
-    <div className="space-y-8">
+    <div className="space-y-8 pt-8 h-full">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[1, 2, 3, 4, 5, 6].map((index) => (
           <div

@@ -9,7 +9,7 @@ import { useContentSelection } from "./hooks/content/useContentSelection";
 import { useVideoHandlers } from "./hooks/video/useVideoHandlers";
 import { useCourseSelection } from "./hooks/course/useCourseSelection";
 import { useNavigation } from "./hooks/navigation/useNavigation";
-
+import { ThemeProvider } from "./context/ThemeContext";
 const App = () => {
   const [selectedContent, setSelectedContent] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
@@ -87,33 +87,35 @@ const App = () => {
   );
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
-      {!selectedCourse ? (
-        <Home onCourseSelect={handleCourseSelect} />
-      ) : (
-        <CourseView
-          isLoading={isLoading}
-          structure={structure}
-          selectedCourse={selectedCourse}
-          expandedFolders={expandedFolders}
-          toggleFolder={toggleFolder}
-          videoProgress={videoProgress}
-          videoHistory={videoHistory}
-          handleWatchedChange={handleWatchedChange}
-          selectContent={selectContent}
-          calculateFolderProgress={calculateFolderProgress}
-          goToHome={goToHome}
-          courseInfo={courseInfo}
-          selectedContent={selectedContent}
-          getSectionName={getSectionName}
-          getFileName={getFileName}
-          handleVideoTimeUpdate={handleVideoTimeUpdate}
-          handleVideoPause={handleVideoPause}
-          handleVideoPlay={handleVideoPlay}
-          handleVideoEnded={handleVideoEnded}
-        />
-      )}
-    </div>
+    <ThemeProvider>
+      <div className="flex flex-col h-screen bg-gray-100">
+        {!selectedCourse ? (
+          <Home onCourseSelect={handleCourseSelect} />
+        ) : (
+          <CourseView
+            isLoading={isLoading}
+            structure={structure}
+            selectedCourse={selectedCourse}
+            expandedFolders={expandedFolders}
+            toggleFolder={toggleFolder}
+            videoProgress={videoProgress}
+            videoHistory={videoHistory}
+            handleWatchedChange={handleWatchedChange}
+            selectContent={selectContent}
+            calculateFolderProgress={calculateFolderProgress}
+            goToHome={goToHome}
+            courseInfo={courseInfo}
+            selectedContent={selectedContent}
+            getSectionName={getSectionName}
+            getFileName={getFileName}
+            handleVideoTimeUpdate={handleVideoTimeUpdate}
+            handleVideoPause={handleVideoPause}
+            handleVideoPlay={handleVideoPlay}
+            handleVideoEnded={handleVideoEnded}
+          />
+        )}
+      </div>
+    </ThemeProvider>
   );
 };
 

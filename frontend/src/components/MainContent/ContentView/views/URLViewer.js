@@ -1,6 +1,7 @@
 import { ExternalLink, Link } from "lucide-react";
 import { useEffect, useState } from "react";
 import Loader from "../../../common/Loader";
+import GradientButton from "../../../common/GradientButton";
 
 const URLViewer = ({ filePath }) => {
   const [url, setUrl] = useState("");
@@ -65,27 +66,14 @@ const URLViewer = ({ filePath }) => {
 
           {/* Botón de abrir enlace */}
           <div className="flex justify-center pt-4">
-            <a
+            <GradientButton
               href={url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="
-                group
-                inline-flex items-center px-8 py-4
-                bg-gradient-to-r from-blue-500 to-indigo-600
-                hover:from-blue-600 hover:to-indigo-700
-                text-white font-medium rounded-2xl
-                transition-all duration-300
-                hover:shadow-lg hover:shadow-blue-200/50
-                active:scale-95
-                relative
-                overflow-hidden
-              "
-            >
-              <span className="absolute inset-0 bg-white/20 transform -skew-x-12 -translate-x-full group-hover:translate-x-full transition-transform duration-700" />
-              <ExternalLink size={20} className="mr-2" />
-              <span className="relative text-lg">Abrir enlace</span>
-            </a>
+              isExternalLink={true}
+              startColor="blue"
+              endColor="indigo"
+              icon={ExternalLink}
+              label="Abrir enlace"
+            />
           </div>
 
           {/* Nota informativa */}
