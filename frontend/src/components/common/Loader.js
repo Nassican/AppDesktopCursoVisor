@@ -1,6 +1,10 @@
 import React from "react";
 
-const Loader = ({ size = "medium", color = "blue" }) => {
+const Loader = ({
+  size = "medium",
+  color = "blue",
+  message = "Cargando...",
+}) => {
   const sizeClasses = {
     small: "h-8 w-8",
     medium: "h-12 w-12",
@@ -14,7 +18,7 @@ const Loader = ({ size = "medium", color = "blue" }) => {
   };
 
   return (
-    <div className="flex items-center justify-center h-full">
+    <div className="flex flex-col gap-2 items-center justify-center h-full">
       <div
         className={`
           rounded-full border-4 animate-spin shadow-lg
@@ -22,6 +26,9 @@ const Loader = ({ size = "medium", color = "blue" }) => {
           ${colorClasses[color]}
         `}
       />
+      {message && (
+        <p className="text-gray-500 dark:text-gray-400 text-sm">{message}</p>
+      )}
     </div>
   );
 };

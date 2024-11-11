@@ -52,7 +52,7 @@ const CourseView = ({
         isOpen={isSidebarOpen}
         onToggle={toggleSidebar}
       />
-      <div className="w-full p-4 flex flex-col h-[calc(100vh)]">
+      <div className="w-full p-4 flex flex-col h-[calc(100vh)] bg-gray-50 dark:bg-gray-900">
         <CourseHeader
           courseInfo={courseInfo}
           onToggleSidebar={toggleSidebar}

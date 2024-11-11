@@ -24,6 +24,18 @@
   scrollbar-color: #e2e8f0 transparent;
 }
 
+.dark .custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #1e293b;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
+.dark .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
 /* Ocultar scrollbar cuando no está en uso */
 .custom-scrollbar::-webkit-scrollbar-thumb:vertical {
   visibility: hidden;

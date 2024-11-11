@@ -1,11 +1,9 @@
 import React from "react";
-import { InfoIcon, GraduationCap, Moon, Sun } from "lucide-react";
+import { InfoIcon, GraduationCap } from "lucide-react";
 import SearchBar from "./SearchBar";
-import { useTheme } from "../../../context/ThemeContext";
+import ThemeToggleButton from "../../common/ThemeToggleButton";
 
 function Header({ onAboutClick, searchValue, onSearchChange }) {
-  const { theme, toggleTheme } = useTheme();
-
   return (
     <header
       className="
@@ -56,21 +54,7 @@ function Header({ onAboutClick, searchValue, onSearchChange }) {
               >
                 <InfoIcon className="w-5 h-5 text-blue-600 dark:text-blue-400" />
               </button>
-              <button
-                onClick={toggleTheme}
-                className="p-2.5 rounded-full hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors dark:bg-white/10"
-                title={
-                  theme === "light"
-                    ? "Cambiar a modo oscuro"
-                    : "Cambiar a modo claro"
-                }
-              >
-                {theme === "light" ? (
-                  <Moon className="w-5 h-5 text-gray-600 dark:text-gray-300 " />
-                ) : (
-                  <Sun className="w-5 h-5 text-gray-300" />
-                )}
-              </button>
+              <ThemeToggleButton />
             </div>
           </div>
 

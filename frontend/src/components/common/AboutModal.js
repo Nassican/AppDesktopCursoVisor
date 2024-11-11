@@ -47,7 +47,7 @@ const AboutModal = ({ isOpen, onClose }) => {
       className="fixed inset-0 bg-black/50 dark:bg-slate-800/50 backdrop-blur-sm flex items-center justify-center z-50 animate-fadeIn p-4 sm:p-0"
       onClick={(e) => e.target === e.currentTarget && onClose()}
     >
-      <div className="bg-white dark:bg-slate-800 p-4 sm:p-8 rounded-xl shadow-2xl w-full max-w-xl transform transition-all animate-modalSlide">
+      <div className="bg-white dark:bg-slate-800 p-4 sm:p-8 border border-gray-200 dark:border-gray-700 rounded-xl shadow-2xl w-full max-w-xl transform transition-all animate-modalSlide">
         <div className="flex flex-col relative">
           <button
             onClick={onClose}
@@ -88,7 +88,7 @@ const AboutModal = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          <div className="flex flex-col bg-gradient-to-r from-blue-50 dark:from-blue-900 to-blue-100 dark:to-blue-900 p-3 sm:p-4 rounded-xl">
+          <div className="flex flex-col  bg-gradient-to-r from-blue-50 dark:from-blue-900 to-blue-100 dark:to-blue-900 p-3 sm:p-4 rounded-xl">
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0">
               <div className="flex flex-col items-start space-y-1 sm:space-y-2">
                 <span className="px-3 py-1 bg-blue-500 dark:bg-blue-600 text-white text-xs font-medium rounded-full">
@@ -102,7 +102,7 @@ const AboutModal = ({ isOpen, onClose }) => {
               <div className="w-full sm:w-auto">
                 <a
                   href="https://github.com/Nassican"
-                  className="group flex items-center gap-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 w-full sm:w-auto justify-center sm:justify-start"
+                  className="group flex items-center hover:scale-105 gap-2 px-4 py-2 bg-white dark:bg-slate-800 rounded-lg shadow-sm hover:shadow-md transition-all duration-300 w-full sm:w-auto justify-center sm:justify-start"
                   target="_blank"
                   rel="noopener noreferrer"
                 >

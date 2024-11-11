@@ -29,7 +29,7 @@ const MainView = ({
 
   return (
     <div className="flex flex-col flex-1 min-h-0">
-      <h2 className="text-lg font-semibold mb-4 text-gray-500">
+      <h2 className="text-lg font-semibold mb-4 text-gray-500 dark:text-gray-400">
         {getSectionName(selectedContent)} / {getFileName(selectedContent.path)}
       </h2>
 

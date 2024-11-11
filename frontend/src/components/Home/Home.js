@@ -98,10 +98,10 @@ const Home = React.memo(({ onCourseSelect }) => {
   );
 
   return (
-    <div className="h-screen bg-gray-100 dark:bg-slate-800 flex flex-col overflow-hidden">
+    <div className="h-screen bg-gray-50 dark:bg-gray-900 flex flex-col overflow-hidden">
       <Header {...headerProps} />
       <main
-        className="flex-1 px-8 pb-8 bg-gray-100 dark:bg-slate-800 overflow-y-auto 
+        className="flex-1 px-8 pb-8 bg-gray-50 dark:bg-gray-900 overflow-y-auto 
         sm:[&::-webkit-scrollbar]:w-[14px] [&::-webkit-scrollbar]:w-0
         sm:[&::-webkit-scrollbar-track]:bg-transparent 
         sm:[&::-webkit-scrollbar-thumb]:bg-gray-300 dark:[&::-webkit-scrollbar-thumb]:bg-slate-700

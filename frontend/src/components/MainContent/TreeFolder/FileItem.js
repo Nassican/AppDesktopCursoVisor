@@ -15,7 +15,7 @@ const FileItem = ({
 }) => {
   return (
     <div className="flex flex-col w-full pl-2">
-      <div className="hover:bg-gray-100 w-full rounded-lg">
+      <div className="hover:bg-gray-100 dark:hover:bg-gray-800 w-full rounded-lg">
         <div
           className="cursor-pointer p-2 pl-5"
           onClick={() => onSelect(value.type, value.path)}
@@ -38,7 +38,10 @@ const FileItem = ({
             ) : (
               <div className="ml-4"></div>
             )}
-            <span className="truncate" title={fileName}>
+            <span
+              className="truncate text-gray-800 dark:text-gray-300"
+              title={fileName}
+            >
               {fileName}
             </span>
           </div>
