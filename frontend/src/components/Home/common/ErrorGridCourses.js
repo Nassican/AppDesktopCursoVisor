@@ -30,7 +30,7 @@ const ErrorGridCourses = () => {
             startColor="blue"
             endColor="indigo"
             icon={RefreshCcw}
-            label="Abrir enlace"
+            label="Recargar"
           />
         </div>
       </div>
