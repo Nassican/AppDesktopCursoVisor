@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Home from "./components/Home/Home";
 import { getFileName, getSectionName } from "./utils/fileUtils";
 import { useCourseData } from "./hooks/course/useCourseData";
@@ -13,7 +13,7 @@ import { ThemeProvider } from "./context/ThemeContext";
 const App = () => {
   const [selectedContent, setSelectedContent] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
-  const [, setIsVideoPaused] = useState(true);
+  const [isVideoPaused, setIsVideoPaused] = useState(true);
 
   const {
     structure,
@@ -85,6 +85,33 @@ const App = () => {
     setExpandedFolders,
     setSelectedContent
   );
+
+  const PROGRESS_UPDATE_INTERVAL = 10000;
+
+  useEffect(() => {
+    let syncInterval;
+
+    if (selectedContent && selectedContent.type === "video" && !isVideoPaused) {
+      syncInterval = setInterval(() => {
+        const lastProgress =
+          lastProgressUpdateRef.current[selectedContent.path];
+        if (lastProgress) {
+          updateVideoProgressToBackend(selectedContent.path, lastProgress);
+        }
+      }, PROGRESS_UPDATE_INTERVAL);
+    }
+
+    return () => {
+      if (syncInterval) {
+        clearInterval(syncInterval);
+      }
+    };
+  }, [
+    selectedContent,
+    updateVideoProgressToBackend,
+    isVideoPaused,
+    lastProgressUpdateRef,
+  ]);
 
   return (
     <ThemeProvider>
