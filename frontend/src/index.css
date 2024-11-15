@@ -33,7 +33,7 @@
 }
 
 .dark .custom-scrollbar {
-  scrollbar-color: #475569 transparent; /* Actualizar color para Firefox */
+  scrollbar-color: #475569 transparent; /* Actualizar color para Firefox dark */
 }
 
 /* Ocultar scrollbar cuando no está en uso */
