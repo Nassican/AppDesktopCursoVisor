@@ -22,6 +22,7 @@ export const useVideoProgress = (selectedCourse, setVideoProgress) => {
     [selectedCourse]
   );
 
+  // Fix for the progress not being updated in the UI when the user navigates to another page
   const updateVideoProgressLocally = useCallback(
     (path, newProgress) => {
       setVideoProgress((prev) => ({
