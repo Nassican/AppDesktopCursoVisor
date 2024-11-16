@@ -60,6 +60,8 @@ const VideoViewer = ({
   const [lastSpacePress, setLastSpacePress] = useState(0);
   const DOUBLE_PRESS_DELAY = 300; // milisegundos para detectar doble presión
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isControlsVisible, setIsControlsVisible] = useState(true);
+  const timeoutRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -194,6 +196,43 @@ const VideoViewer = ({
     setIsSpeedMenuOpen(false);
   };
 
+  useEffect(() => {
+    const handleMouseMove = () => {
+      setIsControlsVisible(true);
+
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        if (!isSpeedMenuOpen) {
+          setIsControlsVisible(false);
+        }
+      }, 3000);
+    };
+
+    const handleMouseLeave = () => {
+      if (!isSpeedMenuOpen) {
+        setIsControlsVisible(false);
+      }
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+
+    const container = containerRef.current;
+    container.addEventListener("mousemove", handleMouseMove);
+    container.addEventListener("mouseleave", handleMouseLeave);
+
+    return () => {
+      container.removeEventListener("mousemove", handleMouseMove);
+      container.removeEventListener("mouseleave", handleMouseLeave);
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+    };
+  }, [isSpeedMenuOpen]);
+
   return (
     <>
       <style>{fullscreenStyles}</style>
@@ -226,7 +265,11 @@ const VideoViewer = ({
         />
 
         {/* Controles personalizados */}
-        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <div
+          className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-4 transition-opacity duration-300 ${
+            isControlsVisible || isSpeedMenuOpen ? "opacity-100" : "opacity-0"
+          }`}
+        >
           {/* Barra de progreso mejorada */}
           <div className="relative w-full h-3 group/progress">
             {/* Barra de fondo */}

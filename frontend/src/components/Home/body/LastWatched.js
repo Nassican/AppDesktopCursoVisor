@@ -22,7 +22,7 @@ const LastWatched = ({ lastWatched, courses, onCourseSelect }) => {
 
   return (
     <div className="flex flex-col pt-4">
-      <div className="mb-6 bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 border border-gray-100 dark:border-gray-700">
+      <div className=" bg-white dark:bg-gray-800 p-5 sm:p-6 rounded-xl shadow-sm hover:shadow-lg transition-shadow duration-300 border border-gray-100 dark:border-gray-700">
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-xl font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
             Continuar viendo
