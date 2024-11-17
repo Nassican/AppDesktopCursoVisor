@@ -75,7 +75,7 @@ const AboutModal = ({ isOpen, onClose }) => {
               {technologies.map((tech) => (
                 <div
                   key={tech.name}
-                  className="flex items-center gap-2 sm:gap-3 p-2 hover:bg-gray-200 dark:hover:bg-slate-600 bg-gray-100 dark:bg-slate-700 rounded-lg"
+                  className="flex items-center gap-2 sm:gap-3 p-2 hover:bg-gray-200 dark:hover:bg-slate-600 bg-gray-100 dark:bg-slate-800 rounded-lg"
                 >
                   <tech.icon
                     className={`text-xl sm:text-2xl ${tech.color} transition-transform group-hover:scale-110`}
